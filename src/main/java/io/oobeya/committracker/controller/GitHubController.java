@@ -4,6 +4,7 @@ import io.oobeya.committracker.service.GitHubService;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import io.oobeya.committracker.dto.CommitsRequest;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -16,17 +17,13 @@ public class GitHubController {
     @Autowired
     private GitHubService gitHubService;
 
-    @GetMapping("/commits")
-    public JsonNode getCommits(
-            @RequestParam(name = "owner") String owner,
-            @RequestParam(name = "repo") String repo,
-            @RequestParam(name = "since") String since,
-            @RequestParam(name = "until") String until) throws IOException {
+    @PostMapping("/commits")
+    public JsonNode getCommits(@RequestBody CommitsRequest request) throws IOException {
 
         DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE_TIME;
-        LocalDateTime sinceDate = LocalDateTime.parse(since, formatter);
-        LocalDateTime untilDate = LocalDateTime.parse(until, formatter);
+        LocalDateTime sinceDate = LocalDateTime.parse(request.getSince(), formatter);
+        LocalDateTime untilDate = LocalDateTime.parse(request.getUntil(), formatter);
 
-        return gitHubService.getCommits(owner, repo, sinceDate, untilDate);
+        return gitHubService.getCommits(request.getOwner(), request.getRepo(), sinceDate, untilDate);
     }
 }

@@ -36,7 +36,7 @@ public class GitHubService {
         String untilParam = until.format(formatter);
 
         HttpGet httpGet = new HttpGet(commitsUrl + "?since=" + sinceParam + "&until=" + untilParam);
-        httpGet.setHeader("Authorization", "token " + TOKEN);
+        httpGet.setHeader("Authorization", "token " + token);
 
         HttpResponse response = httpClient.execute(httpGet);
         String responseBody = EntityUtils.toString(response.getEntity());

@@ -1,0 +1,87 @@
+POST http://localhost:8080/api/github/commits
+Content-Type: application/json
+Authorization: token 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
+Content-Length: 122
+User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2024.2.1
+Accept-Encoding: br, deflate, gzip, x-gzip
+Accept: */*
+Cookie: JSESSIONID=96DA762CF9499FF4AE922D23B7EAD116
+
+{
+  "owner": "resulbeser",
+  "repo": "CommitTracker",
+  "since": "2024-08-12T00:00:00",
+  "until": "2024-09-02T23:59:59"
+}
+
+###
+
+POST http://localhost:8080/api/github/commits
+Content-Type: application/json
+Authorization: token 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
+Content-Length: 122
+User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2024.2.1
+Accept-Encoding: br, deflate, gzip, x-gzip
+Accept: */*
+Cookie: JSESSIONID=96DA762CF9499FF4AE922D23B7EAD116
+
+{
+  "owner": "resulbeser",
+  "repo": "CommitTracker",
+  "since": "2024-08-12T00:00:00",
+  "until": "2024-09-02T23:59:59"
+}
+
+###
+
+POST http://localhost:8080/api/github/commits
+Content-Type: application/json
+Authorization: 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
+Content-Length: 122
+User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2024.2.1
+Accept-Encoding: br, deflate, gzip, x-gzip
+Accept: */*
+Cookie: JSESSIONID=96DA762CF9499FF4AE922D23B7EAD116
+
+{
+  "owner": "resulbeser",
+  "repo": "CommitTracker",
+  "since": "2024-08-12T00:00:00",
+  "until": "2024-09-02T23:59:59"
+}
+
+###
+
+POST http://localhost:8080/api/github/commits
+Content-Type: application/json
+Content-Length: 122
+User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2024.2.1
+Accept-Encoding: br, deflate, gzip, x-gzip
+Accept: */*
+Cookie: JSESSIONID=96DA762CF9499FF4AE922D23B7EAD116
+
+{
+  "owner": "resulbeser",
+  "repo": "CommitTracker",
+  "since": "2024-08-12T00:00:00",
+  "until": "2024-09-02T23:59:59"
+}
+
+###
+
+POST http://localhost:8080/api/github/commits
+Content-Type: application/json
+Content-Length: 122
+User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2024.2.1
+Accept-Encoding: br, deflate, gzip, x-gzip
+Accept: */*
+
+{
+  "owner": "resulbeser",
+  "repo": "CommitTracker",
+  "since": "2024-08-12T00:00:00",
+  "until": "2024-09-02T23:59:59"
+}
+
+###
+
