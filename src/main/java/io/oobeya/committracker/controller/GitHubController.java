@@ -18,10 +18,10 @@ public class GitHubController {
 
     @GetMapping("/commits")
     public JsonNode getCommits(
-            @RequestParam String owner,
-            @RequestParam String repo,
-            @RequestParam String since,
-            @RequestParam String until) throws IOException {
+            @RequestParam(name = "owner") String owner,
+            @RequestParam(name = "repo") String repo,
+            @RequestParam(name = "since") String since,
+            @RequestParam(name = "until") String until) throws IOException {
 
         DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE_TIME;
         LocalDateTime sinceDate = LocalDateTime.parse(since, formatter);

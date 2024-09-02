@@ -5,6 +5,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -16,8 +17,14 @@ import java.time.format.DateTimeFormatter;
 
 @Service
 public class GitHubService {
-    private static final String TOKEN = "YOUR_PERSONAL_ACCESS_TOKEN"; // GitHub API Token
+
+    @Value("${github.token}")
+    private String token;
     private static final String BASE_URL = "https://api.github.com";
+
+    // Kullanıcı adınızı ve depo adınızı ekleyin
+    private static final String owner = "resulbeser"; // Kendi GitHub kullanıcı adınızı buraya yazın
+    private static final String repo = "CommitTracker"; // Çekmek istediğiniz depo adını buraya yazın
 
     public JsonNode getCommits(String owner, String repo, LocalDateTime since, LocalDateTime until) throws IOException {
         CloseableHttpClient httpClient = HttpClients.createDefault();
