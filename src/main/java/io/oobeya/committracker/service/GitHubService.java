@@ -1,47 +1,44 @@
 package io.oobeya.committracker.service;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.util.EntityUtils;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-
+import io.oobeya.committracker.dto.CommitsRequest;
+import org.apache.hc.client5.http.classic.methods.HttpGet;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
+import org.apache.hc.client5.http.impl.classic.HttpClients;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import java.io.IOException;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 
-@Service
 public class GitHubService {
+    private static final String GITHUB_API_URL = "https://api.github.com/repos/resulbeser/CommitTracker/commits";
+    private static final String TOKEN = "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";
 
-    @Value("${github.token}")
-    private String token;
-    private static final String BASE_URL = "https://api.github.com";
+    public List<JsonNode> getCommits(CommitsRequest request) {
+        List<JsonNode> commits = new ArrayList<>();
+        String url = String.format(GITHUB_API_URL, request.getOwner(), request.getRepo());
 
-    // Kullanıcı adınızı ve depo adınızı ekleyin
-    private static final String owner = "resulbeser"; // Kendi GitHub kullanıcı adınızı buraya yazın
-    private static final String repo = "CommitTracker"; // Çekmek istediğiniz depo adını buraya yazın
+        try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
+            HttpGet httpGet = new HttpGet(url);
+            httpGet.addHeader("Authorization", "Bearer " + TOKEN);
 
-    public JsonNode getCommits(String owner, String repo, LocalDateTime since, LocalDateTime until) throws IOException {
-        CloseableHttpClient httpClient = HttpClients.createDefault();
-        ObjectMapper objectMapper = new ObjectMapper();
+            try (CloseableHttpResponse response = httpClient.execute(httpGet)) {
+                ObjectMapper mapper = new ObjectMapper();
+                JsonNode jsonResponse = mapper.readTree(response.getEntity().getContent());
 
-        String commitsUrl = BASE_URL + "/repos/" + owner + "/" + repo + "/commits";
-        DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE_TIME;
-        String sinceParam = since.format(formatter);
-        String untilParam = until.format(formatter);
+                System.out.println(jsonResponse.toPrettyString());
+                jsonResponse.forEach(commits::add);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
-        HttpGet httpGet = new HttpGet(commitsUrl + "?since=" + sinceParam + "&until=" + untilParam);
-        httpGet.setHeader("Authorization", "token " + token);
-
-        HttpResponse response = httpClient.execute(httpGet);
-        String responseBody = EntityUtils.toString(response.getEntity());
-
-        httpClient.close();
-        return objectMapper.readTree(responseBody);
+        return commits;
     }
 }
+
+/* Bu sınıf, GitHub API ile iletişim kurarak bir repository'den commit bilgilerini çeker.
+getCommits metodu, belirli bir repository'den commit verilerini alır ve JSON formatında işler.
+API'ye erişim sağlamak için bir Personal Access Token (PAT) kullanılır ve API yanıtı JSON
+formatından bir listeye dönüştürülür.*/
