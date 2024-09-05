@@ -6,14 +6,12 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 import java.util.List;
 
-
-
 public class CommitController {
     private final GitHubService gitHubService;
 
 
     public CommitController(String accessToken) {
-        // Kullanıcı adı ve token bilgilerini GitHubService'e geç
+
         this.gitHubService = new GitHubService(accessToken);
     }
 

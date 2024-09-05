@@ -29,7 +29,10 @@ public class GitHubService {
 
         try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
             HttpGet httpGet = new HttpGet(url);
-            httpGet.addHeader("Authorization", "Bearer " + accessToken);
+
+            if (accessToken != null && !accessToken.isEmpty()) {
+                httpGet.addHeader("Authorization", "Bearer " + accessToken);
+            }
 
             try (CloseableHttpResponse response = httpClient.execute(httpGet)) {
                 int statusCode = response.getCode();
@@ -39,7 +42,7 @@ public class GitHubService {
                     System.out.println("Repo bulunamadı. Kullanıcı adı ve repo adını kontrol edin.");
                     return commits;
                 } else if (statusCode == 401) {
-                    System.out.println("Yetkisiz erişim. Token geçersiz veya izinsiz.");
+                    System.out.println("Yetkisiz erişim. Eğer bu repo özelse, geçerli bir access token girmeniz gerekiyor.");
                     return commits;
                 } else if (statusCode != 200) {
                     System.out.println("API hatası: " + statusCode);
