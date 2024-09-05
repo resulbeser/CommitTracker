@@ -1,36 +1,34 @@
 package io.oobeya.committracker.service;
 
 import io.oobeya.committracker.dto.CommitsRequest;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.hc.client5.http.classic.methods.HttpGet;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
 import org.apache.hc.client5.http.impl.classic.HttpClients;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class GitHubService implements VCSService {
+public class AzureDevOpsService implements VCSService {
 
     private final String accessToken;
 
-    public GitHubService(String accessToken) {
-
+    public AzureDevOpsService(String accessToken) {
         this.accessToken = accessToken;
     }
 
     @Override
     public List<JsonNode> getCommits(CommitsRequest request) {
         List<JsonNode> commits = new ArrayList<>();
-        String url = String.format("https://api.github.com/repos/%s/%s/commits", request.getOwner(), request.getRepo());
+        String url = String.format("https://dev.azure.com/%s/_apis/git/repositories/%s/commits", request.getOwner(), request.getRepo());
 
         System.out.println("Request URL: " + url);
 
         try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
             HttpGet httpGet = new HttpGet(url);
 
-            // Eğer access token varsa, Authorization header ekle
             if (accessToken != null && !accessToken.isEmpty()) {
                 httpGet.addHeader("Authorization", "Bearer " + accessToken);
             }
@@ -40,11 +38,7 @@ public class GitHubService implements VCSService {
                 System.out.println("Response Status Code: " + statusCode);
 
                 if (statusCode == 404) {
-                    if (accessToken == null || accessToken.isEmpty()) {
-                        System.out.println("Repo bulunamadı. Bu repo özel olabilir, lütfen geçerli bir access token girin.");
-                    } else {
-                        System.out.println("Repo bulunamadı. Kullanıcı adı ve repo adını kontrol edin.");
-                    }
+                    System.out.println("Repo bulunamadı. Kullanıcı adı ve repo adını kontrol edin.");
                     return commits;
                 } else if (statusCode == 401) {
                     System.out.println("Yetkisiz erişim. Eğer bu repo özelse, geçerli bir access token girmeniz gerekiyor.");
@@ -65,4 +59,5 @@ public class GitHubService implements VCSService {
         }
         return commits;
     }
+
 }
