@@ -12,31 +12,55 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class GitHubService {
-    private static final String GITHUB_API_URL = "https://api.github.com/repos/resulbeser/CommitTracker/commits";
-    private static final String TOKEN = "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";
+
+    private final String accessToken;
+
+    public GitHubService(String accessToken) {
+
+        this.accessToken = accessToken;
+    }
+
 
     public List<JsonNode> getCommits(CommitsRequest request) {
         List<JsonNode> commits = new ArrayList<>();
-        String url = String.format(GITHUB_API_URL, request.getOwner(), request.getRepo());
+        String url = String.format("https://api.github.com/repos/%s/%s/commits", request.getOwner(), request.getRepo());
+
+        System.out.println("Request URL: " + url);
 
         try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
             HttpGet httpGet = new HttpGet(url);
-            httpGet.addHeader("Authorization", "Bearer " + TOKEN);
+            httpGet.addHeader("Authorization", "Bearer " + accessToken);
 
             try (CloseableHttpResponse response = httpClient.execute(httpGet)) {
+                int statusCode = response.getCode();
+                System.out.println("Response Status Code: " + statusCode);
+
+                if (statusCode == 404) {
+                    System.out.println("Repo bulunamadı. Kullanıcı adı ve repo adını kontrol edin.");
+                    return commits;
+                } else if (statusCode == 401) {
+                    System.out.println("Yetkisiz erişim. Token geçersiz veya izinsiz.");
+                    return commits;
+                } else if (statusCode != 200) {
+                    System.out.println("API hatası: " + statusCode);
+                    return commits;
+                }
+
                 ObjectMapper mapper = new ObjectMapper();
                 JsonNode jsonResponse = mapper.readTree(response.getEntity().getContent());
 
-                System.out.println(jsonResponse.toPrettyString());
+                System.out.println("API Yanıtı: " + jsonResponse.toPrettyString());
                 jsonResponse.forEach(commits::add);
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
-
         return commits;
     }
 }
+
+
+
 
 /* Bu sınıf, GitHub API ile iletişim kurarak bir repository'den commit bilgilerini çeker.
 getCommits metodu, belirli bir repository'den commit verilerini alır ve JSON formatında işler.
