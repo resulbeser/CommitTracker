@@ -30,6 +30,7 @@ public class GitHubService {
         try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
             HttpGet httpGet = new HttpGet(url);
 
+            // Eğer access token varsa, Authorization header ekle
             if (accessToken != null && !accessToken.isEmpty()) {
                 httpGet.addHeader("Authorization", "Bearer " + accessToken);
             }
@@ -39,7 +40,11 @@ public class GitHubService {
                 System.out.println("Response Status Code: " + statusCode);
 
                 if (statusCode == 404) {
-                    System.out.println("Repo bulunamadı. Kullanıcı adı ve repo adını kontrol edin.");
+                    if (accessToken == null || accessToken.isEmpty()) {
+                        System.out.println("Repo bulunamadı. Bu repo özel olabilir, lütfen geçerli bir access token girin.");
+                    } else {
+                        System.out.println("Repo bulunamadı. Kullanıcı adı ve repo adını kontrol edin.");
+                    }
                     return commits;
                 } else if (statusCode == 401) {
                     System.out.println("Yetkisiz erişim. Eğer bu repo özelse, geçerli bir access token girmeniz gerekiyor.");
@@ -61,11 +66,3 @@ public class GitHubService {
         return commits;
     }
 }
-
-
-
-
-/* Bu sınıf, GitHub API ile iletişim kurarak bir repository'den commit bilgilerini çeker.
-getCommits metodu, belirli bir repository'den commit verilerini alır ve JSON formatında işler.
-API'ye erişim sağlamak için bir Personal Access Token (PAT) kullanılır ve API yanıtı JSON
-formatından bir listeye dönüştürülür.*/
