@@ -35,6 +35,23 @@ public class CommitController {
             System.out.println("Commit: " + sha);
             System.out.println("Author: " + author);
             System.out.println("Message: " + message);
+
+            // Sadece GitHubService için commit detaylarını al
+            if (vcsService instanceof GitHubService) {
+                GitHubService gitHubService = (GitHubService) vcsService;
+                JsonNode commitDetails = gitHubService.getCommitDetails(owner, repo, sha);
+
+                if (commitDetails != null && commitDetails.has("files")) {
+                    System.out.println("Değişiklikler:");
+                    for (JsonNode file : commitDetails.get("files")) {
+                        String fileName = file.has("filename") ? file.get("filename").asText() : "Unknown file";
+                        int additions = file.has("additions") ? file.get("additions").asInt() : 0;
+                        int deletions = file.has("deletions") ? file.get("deletions").asInt() : 0;
+                        System.out.println("Dosya: " + fileName + ", Eklenen Satırlar: " + additions + ", Silinen Satırlar: " + deletions);
+                    }
+                }
+            }
+
             System.out.println("----------------------------");
         }
     }

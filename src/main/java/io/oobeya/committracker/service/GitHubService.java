@@ -65,4 +65,30 @@ public class GitHubService implements VCSService {
         }
         return commits;
     }
+
+    public JsonNode getCommitDetails(String owner, String repo, String sha) {
+        String url = String.format("https://api.github.com/repos/%s/%s/commits/%s", owner, repo, sha);
+        try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
+            HttpGet httpGet = new HttpGet(url);
+
+            if (accessToken != null && !accessToken.isEmpty()) {
+                httpGet.addHeader("Authorization", "Bearer " + accessToken);
+            }
+
+            try (CloseableHttpResponse response = httpClient.execute(httpGet)) {
+                int statusCode = response.getCode();
+                if (statusCode != 200) {
+                    System.out.println("API hatası: " + statusCode);
+                    return null;
+                }
+
+                ObjectMapper mapper = new ObjectMapper();
+                JsonNode jsonResponse = mapper.readTree(response.getEntity().getContent());
+                return jsonResponse;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 }
