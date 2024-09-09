@@ -8,6 +8,8 @@ public enum CommitStatus {
 
     private final String message;
 
+    //TODO javada hata messajlar nasıl hndle edilir, nasıl tanımlanır, enum ile record arasındaki farka bakabilirsin
+
     CommitStatus(String message) {
         this.message = message;
     }

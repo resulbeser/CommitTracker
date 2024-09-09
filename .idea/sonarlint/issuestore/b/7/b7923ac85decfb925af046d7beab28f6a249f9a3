@@ -1,0 +1,37 @@
+
+‚
+java:S1192N"FDefine a constant instead of duplicating this literal "files" 4 times.(é™ÑJ$f45393c0-4aee-4c83-ab0c-a485d001ab9e
+¥
+java:S1488w"dImmediately return this expression instead of assigning it to the temporary variable "jsonResponse".(ĞÁÑùÿÿÿÿJ$1013667e-b260-4e12-9d9a-857aa8985442
+u
+java:S1135"2Complete the task associated to this TODO comment.(”íáÊ8Æ³·2J$7d75d712-a2dd-4a03-adcf-905c9529b79d
+
+java:S3776"RRefactor this method to reduce its Cognitive Complexity from 24 to the 15 allowed.(Àê†ğJ$c0a81946-18bb-49f8-8d7a-bc89cc417f24
+u
+java:S1135"2Complete the task associated to this TODO comment.(»ø‰8á¿§·2J$f3bf6e20-b574-4af4-b13a-a323b034d651
+f	java:S106!"+Replace this use of System.out by a logger.(¼Ê÷ğJ$0f506c90-d763-461f-bc31-f97d3dfc0bd7
+e	java:S106""+Replace this use of System.out by a logger.(–ïşBJ$482038a0-6bd2-4cd3-a70a-179a4e744d27
+e	java:S106#"+Replace this use of System.out by a logger.(ØÎ§qJ$4b0e06fc-a53e-477c-82bc-1f689356995d
+k	java:S106$"+Replace this use of System.out by a logger.(©üÃõüÿÿÿÿJ$6b5a1997-0f8b-44fd-ad3f-8052351f69bc
+z
+java:S1135)"2Complete the task associated to this TODO comment.(¼“Šÿÿÿÿÿ8³”¬·2J$29f3ffd3-8aea-4208-b55c-d02e01b29b22
+k
+java:S1874/"/Remove this use of "execute"; it is deprecated.(³êğ‹J$901b2e91-b451-4360-a827-d25d24f106f6
+k	java:S1061"+Replace this use of System.out by a logger.(ä¥Ù¦úÿÿÿÿJ$f9f3f05e-6e6d-4ba2-a7f7-9243723d581a
+z
+java:S11352"2Complete the task associated to this TODO comment.(‰ƒ“€ùÿÿÿÿ8ı¹«·2J$3ebf4734-6705-49e2-bb1f-288aea949e7c
+f	java:S1064"+Replace this use of System.out by a logger.(ôöé¿J$a32e4a13-b5d6-4b7a-b58a-b64a084c347c
+k	java:S1067"+Replace this use of System.out by a logger.(¶åóûÿÿÿÿJ$6b20f177-7aec-4e22-8530-a99f813c657e
+f	java:S106:"+Replace this use of System.out by a logger.(á©ˆşJ$1ee8ad2c-881b-4287-8ce6-6a8e8b44006d
+k	java:S106A"+Replace this use of System.out by a logger.(€ˆ˜øşÿÿÿÿJ$88143289-bde6-42ef-b23b-ac788821553b
+k	java:S106B"+Replace this use of System.out by a logger.(©üÃõüÿÿÿÿJ$964b8cf3-e013-4f4f-946b-08c87bcaf45a
+k	java:S106J"+Replace this use of System.out by a logger.(§ĞõùşÿÿÿÿJ$756ebb71-a840-4cc0-8a4a-294756c0448b
+f	java:S106O"+Replace this use of System.out by a logger.(Ôİ‰›J$9629fb65-e8da-4542-ae35-f33610f76a48
+k	java:S106U"+Replace this use of System.out by a logger.(›È³«øÿÿÿÿJ$aa89b415-4b4a-44bc-9cf8-389021839b9a
+k	java:S106X"+Replace this use of System.out by a logger.(‘â¡¥ÿÿÿÿÿJ$ea110c3c-188d-4aea-847d-eedba3e66ab8
+f	java:S106["+Replace this use of System.out by a logger.(íê­…J$bffef334-294f-4bc1-b337-586ccc6db419
+k	java:S106`"+Replace this use of System.out by a logger.(òòÏ‘ÿÿÿÿÿJ$066f54cb-80a4-40bd-99c2-628221384329
+k
+java:S1874o"/Remove this use of "execute"; it is deprecated.(³êğ‹J$7ca5ec95-745c-450d-a130-998ce989d9a0
+f	java:S106r"+Replace this use of System.out by a logger.(¼ÿÈJ$6ede5a34-db56-41b6-8dda-a0633bd5764d
+k	java:S106{"+Replace this use of System.out by a logger.(òòÏ‘ÿÿÿÿÿJ$cd8c6d85-d863-4d53-9b9a-0b62775e31f5

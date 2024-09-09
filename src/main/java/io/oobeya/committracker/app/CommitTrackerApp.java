@@ -27,7 +27,9 @@ public class CommitTrackerApp {
                 return;
             }
 
+            // TODO: BİR commit interfaceine bağlanmalı, bu interface i implement eden bir commit serviceiın olmalı, o zaman bu satırı silebilirz
             CommitController commitController = new CommitController(vcsService);
+            //TODO: kullanılmamış o yüzden silebilriz
             CommitsRequest request = new CommitsRequest(owner, repo);
 
             commitController.getCommits(owner, repo).forEach(commitResponse -> {
@@ -54,7 +56,7 @@ public class CommitTrackerApp {
     }
 
     private static int getUserChoice(Scanner scanner) {
-        int choice = -1;
+        int choice = -1; // TODO constant olmalı , bussinesı anlatmalı, koda baktığıdma neden -1 olduğunu anlamalıyım
         try {
             System.out.println("Veri çekmek istediğiniz platformu seçin:");
             System.out.println("1. GitHub");
@@ -77,6 +79,8 @@ public class CommitTrackerApp {
     }
 
     private static VCSService getVCSService(int choice, String accessToken) {
+
+        //TODO: tek satırda (inline) olarak dönülebilir.
         switch (choice) {
             case 1:
                 return new GitHubService(accessToken);
