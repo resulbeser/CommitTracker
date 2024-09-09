@@ -15,6 +15,7 @@ import java.util.List;
 
 @Service
 public class GitHubService implements VCSService {
+    // TODO : yapı şu şekilde olmalı, commitInterface -> commitImplements -> burada çağıracağın bussineslar için ayrı sınfıların olmalı, örneğin commit parser, githuba gittiğin bir integration sınıfı olmalı, bir de database ekleyelim
 
     private final String accessToken;
 
@@ -24,6 +25,8 @@ public class GitHubService implements VCSService {
 
     @Override
     public List<JsonNode> getCommits(CommitsRequest request) {
+
+        //TODO: methodlara bölerek anlamlı hale getirelim
         List<JsonNode> commits = new ArrayList<>();
         String url = String.format("https://api.github.com/repos/%s/%s/commits", request.getOwner(), request.getRepo());
 
@@ -35,6 +38,7 @@ public class GitHubService implements VCSService {
         try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
             HttpGet httpGet = new HttpGet(url);
 
+            //todo:  stringUtils, araştırabilirsin
             // Eğer access token varsa, Authorization header ekle
             if (accessToken != null && !accessToken.isEmpty()) {
                 httpGet.addHeader("Authorization", "Bearer " + accessToken);
@@ -43,7 +47,7 @@ public class GitHubService implements VCSService {
             try (CloseableHttpResponse response = httpClient.execute(httpGet)) {
                 int statusCode = response.getCode();
                 System.out.println("=> Yanıt Durum Kodu: " + statusCode);
-
+                // todo : burada yaptığın kontrolleri catch içerisinde yapabilriiz aynı zamanda genel hata yakalama mekanizmalarına bakarsan güzel olur
                 if (statusCode == 404) {
                     System.out.println("HATA: Repo bulunamadı. Bu repo özel olabilir veya kullanıcı adı/repo adı hatalı olabilir.");
                     return commits;
