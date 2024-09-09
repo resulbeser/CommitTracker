@@ -1,16 +1,12 @@
 package io.oobeya.committracker.service;
 
+import io.oobeya.committracker.dto.CommitResponse;
 import io.oobeya.committracker.dto.CommitsRequest;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.hc.client5.http.classic.methods.HttpGet;
-import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
-import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
-import org.apache.hc.client5.http.impl.classic.HttpClients;
-
-import java.util.ArrayList;
+import org.springframework.stereotype.Service;
 import java.util.List;
 
+@Service
 public class GitLabService implements VCSService {
 
     private final String accessToken;
@@ -21,42 +17,24 @@ public class GitLabService implements VCSService {
 
     @Override
     public List<JsonNode> getCommits(CommitsRequest request) {
-        List<JsonNode> commits = new ArrayList<>();
-        String url = String.format("https://gitlab.com/api/v4/projects/%s/repository/commits", request.getRepo());
+        // GitLab API'si üzerinden commit'leri alma mantığı
+        // Örnek: GitLab API çağrısı yaparak sonuçları döndürme
+        return null; // Gerçek uygulamada, GitLab API çağrısını yaparak bu listeyi döndürmelisiniz.
+    }
 
-        System.out.println("Request URL: " + url);
+    @Override
+    public JsonNode getCommitDetails(String owner, String repo, String sha) {
+        // GitLab API'si üzerinden belirli bir commit'in detaylarını alma mantığı
+        return null; // Gerçek uygulamada, GitLab API çağrısını yaparak detayları döndürmelisiniz.
+    }
 
-        try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
-            HttpGet httpGet = new HttpGet(url);
+    @Override
+    public void formatCommitDetails(String owner, String repo, String sha, CommitResponse commitResponse) {
+        // GitLab'a özgü commit detaylarını ekleme
+        JsonNode commitDetails = getCommitDetails(owner, repo, sha);
 
-            if (accessToken != null && !accessToken.isEmpty()) {
-                httpGet.addHeader("Authorization", "Bearer " + accessToken);
-            }
-
-            try (CloseableHttpResponse response = httpClient.execute(httpGet)) {
-                int statusCode = response.getCode();
-                System.out.println("Response Status Code: " + statusCode);
-
-                if (statusCode == 404) {
-                    System.out.println("Repo bulunamadı. Kullanıcı adı ve repo adını kontrol edin.");
-                    return commits;
-                } else if (statusCode == 401) {
-                    System.out.println("Yetkisiz erişim. Eğer bu repo özelse, geçerli bir access token girmeniz gerekiyor.");
-                    return commits;
-                } else if (statusCode != 200) {
-                    System.out.println("API hatası: " + statusCode);
-                    return commits;
-                }
-
-                ObjectMapper mapper = new ObjectMapper();
-                JsonNode jsonResponse = mapper.readTree(response.getEntity().getContent());
-
-                System.out.println("API Yanıtı: " + jsonResponse.toPrettyString());
-                jsonResponse.forEach(commits::add);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
+        if (commitDetails != null && commitDetails.has("files")) {
+            commitResponse.setFiles(commitDetails.get("files"));
         }
-        return commits;
     }
 }

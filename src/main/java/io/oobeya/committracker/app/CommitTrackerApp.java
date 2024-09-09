@@ -1,6 +1,7 @@
 package io.oobeya.committracker.app;
 
 import io.oobeya.committracker.controller.CommitController;
+import io.oobeya.committracker.dto.CommitsRequest;
 import io.oobeya.committracker.service.*;
 
 import java.util.InputMismatchException;
@@ -11,7 +12,6 @@ public class CommitTrackerApp {
         try (Scanner scanner = new Scanner(System.in)) {
             int choice = getUserChoice(scanner);
 
-            // Continue prompting until a valid choice is entered
             while (choice < 1 || choice > 4) {
                 System.out.println("Geçersiz seçim! Lütfen 1-4 arasında bir değer giriniz.");
                 choice = getUserChoice(scanner);
@@ -28,7 +28,26 @@ public class CommitTrackerApp {
             }
 
             CommitController commitController = new CommitController(vcsService);
-            commitController.displayCommits(owner, repo);
+            CommitsRequest request = new CommitsRequest(owner, repo);
+
+            commitController.getCommits(owner, repo).forEach(commitResponse -> {
+                System.out.println("========================================");
+                System.out.println("Commit SHA: " + commitResponse.getSha());
+                System.out.println("Author: " + commitResponse.getAuthor());
+                System.out.println("Date: " + commitResponse.getDate());
+                System.out.println("Message: " + commitResponse.getMessage());
+
+                if (!commitResponse.getFiles().isEmpty()) {
+                    System.out.println("\nChanged Files:");
+                    int fileIndex = 1;
+                    for (var file : commitResponse.getFiles()) {
+                        System.out.println(fileIndex++ + ". File: " + file.getFileName());
+                        System.out.println("   - Added Lines: " + file.getAdditions());
+                        System.out.println("   - Deleted Lines: " + file.getDeletions());
+                    }
+                }
+                System.out.println("----------------------------------------\n");
+            });
         } catch (InputMismatchException e) {
             System.out.println("Lütfen geçerli bir sayı girin.");
         }
@@ -44,10 +63,10 @@ public class CommitTrackerApp {
             System.out.println("4. Bitbucket");
             System.out.print("Seçiminiz (1-4): ");
             choice = scanner.nextInt();
-            scanner.nextLine(); // Consume newline character
+            scanner.nextLine();
         } catch (InputMismatchException e) {
             System.out.println("Geçersiz giriş! Lütfen 1-4 arasında bir sayı girin.");
-            scanner.nextLine(); // Consume invalid input
+            scanner.nextLine();
         }
         return choice;
     }
