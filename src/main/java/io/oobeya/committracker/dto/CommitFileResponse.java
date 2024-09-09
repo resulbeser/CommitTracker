@@ -5,12 +5,14 @@ public class CommitFileResponse {
     private int additions;
     private int deletions;
 
+    //TODO: lombok kullanabilriiz
     public CommitFileResponse(String fileName, int additions, int deletions) {
         this.fileName = fileName;
         this.additions = additions;
         this.deletions = deletions;
     }
 
+    //TODO lombok kullanabiliriz
     public String getFileName() {
         return fileName;
     }
