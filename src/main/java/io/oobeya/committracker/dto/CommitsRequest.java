@@ -24,6 +24,4 @@ public class CommitsRequest {
     public void setRepo(String repo) {
         this.repo = repo;
     }
-
-
 }
