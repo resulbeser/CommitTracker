@@ -1,16 +1,20 @@
 package io.oobeya.committracker.dto;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Data // Getter, Setter, toString, hashCode ve equals metodlarını otomatik olarak oluşturur
+@NoArgsConstructor // Parametresiz bir constructor oluşturur
 public class CommitResponse {
     private String sha;
     private String message;
     private String author;
     private String date;
-    private List<CommitFileResponse> files;
+    private List<CommitFileResponse> files = new ArrayList<>();
 
     public CommitResponse(String sha, String message, String author, String date) {
         this.sha = sha;
@@ -18,42 +22,6 @@ public class CommitResponse {
         this.author = author;
         this.date = date;
         this.files = new ArrayList<>();
-    }
-
-    public String getSha() {
-        return sha;
-    }
-
-    public void setSha(String sha) {
-        this.sha = sha;
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
-    }
-
-    public String getAuthor() {
-        return author;
-    }
-
-    public void setAuthor(String author) {
-        this.author = author;
-    }
-
-    public String getDate() {
-        return date;
-    }
-
-    public void setDate(String date) {
-        this.date = date;
-    }
-
-    public List<CommitFileResponse> getFiles() {
-        return files;
     }
 
     public void setFiles(JsonNode fileNodes) {

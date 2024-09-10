@@ -1,8 +1,17 @@
 package io.oobeya.committracker.app;
 
 import io.oobeya.committracker.controller.CommitController;
-import io.oobeya.committracker.dto.CommitsRequest;
+import io.oobeya.committracker.dto.CommitResponse;
 import io.oobeya.committracker.service.*;
+import io.oobeya.committracker.service.bitbucket.BitbucketCommitService;
+import io.oobeya.committracker.service.bitbucket.BitbucketIntegrationService;
+import io.oobeya.committracker.service.bitbucket.parser.BitbucketCommitParser;
+import io.oobeya.committracker.service.github.GitHubCommitService;
+import io.oobeya.committracker.service.github.GitHubIntegrationService;
+import io.oobeya.committracker.service.github.parser.GitHubCommitParser;
+import io.oobeya.committracker.service.gitlab.GitLabCommitService;
+import io.oobeya.committracker.service.gitlab.GitLabIntegrationService;
+import io.oobeya.committracker.service.gitlab.parser.GitLabCommitParser;
 
 import java.util.InputMismatchException;
 import java.util.Scanner;
@@ -21,17 +30,16 @@ public class CommitTrackerApp {
             String repo = getInput(scanner, "Repo Adı Giriniz: ");
             String accessToken = getInput(scanner, "Access Token Giriniz (Opsiyonel): ");
 
-            VCSService vcsService = getVCSService(choice, accessToken);
-            if (vcsService == null) {
+            // Doğru CommitService nesnesi oluşturma
+            CommitService commitService = getCommitService(choice, accessToken);
+            if (commitService == null) {
                 System.out.println("Geçersiz seçim!");
                 return;
             }
 
-            // TODO: BİR commit interfaceine bağlanmalı, bu interface i implement eden bir commit serviceiın olmalı, o zaman bu satırı silebilirz
-            CommitController commitController = new CommitController(vcsService);
-            //TODO: kullanılmamış o yüzden silebilriz
-            CommitsRequest request = new CommitsRequest(owner, repo);
+            CommitController commitController = new CommitController(commitService);
 
+            // Tüm commitleri al ve her bir commit için detayları göster
             commitController.getCommits(owner, repo).forEach(commitResponse -> {
                 System.out.println("========================================");
                 System.out.println("Commit SHA: " + commitResponse.getSha());
@@ -39,24 +47,35 @@ public class CommitTrackerApp {
                 System.out.println("Date: " + commitResponse.getDate());
                 System.out.println("Message: " + commitResponse.getMessage());
 
-                if (!commitResponse.getFiles().isEmpty()) {
-                    System.out.println("\nChanged Files:");
-                    int fileIndex = 1;
-                    for (var file : commitResponse.getFiles()) {
-                        System.out.println(fileIndex++ + ". File: " + file.getFileName());
-                        System.out.println("   - Added Lines: " + file.getAdditions());
-                        System.out.println("   - Deleted Lines: " + file.getDeletions());
+                // Commit detaylarını al
+                CommitResponse commitDetails = commitService.getCommitDetails(owner, repo, commitResponse.getSha());
+
+                if (commitDetails != null) {
+                    if (!commitDetails.getFiles().isEmpty()) {
+                        System.out.println("\nChanged Files:");
+                        int fileIndex = 1;
+                        for (var file : commitDetails.getFiles()) {
+                            System.out.println(fileIndex++ + ". File: " + file.getFileName());
+                            System.out.println("   - Added Lines: " + file.getAdditions());
+                            System.out.println("   - Deleted Lines: " + file.getDeletions());
+                        }
+                    } else {
+                        System.out.println("Bu committe değiştirilen dosya bulunamadı.");
                     }
+                } else {
+                    System.out.println("Geçersiz SHA veya commit detayları bulunamadı.");
                 }
+
                 System.out.println("----------------------------------------\n");
             });
+
         } catch (InputMismatchException e) {
             System.out.println("Lütfen geçerli bir sayı girin.");
         }
     }
 
     private static int getUserChoice(Scanner scanner) {
-        int choice = -1; // TODO constant olmalı , bussinesı anlatmalı, koda baktığıdma neden -1 olduğunu anlamalıyım
+        int choice = -1;
         try {
             System.out.println("Veri çekmek istediğiniz platformu seçin:");
             System.out.println("1. GitHub");
@@ -78,20 +97,29 @@ public class CommitTrackerApp {
         return scanner.nextLine();
     }
 
-    private static VCSService getVCSService(int choice, String accessToken) {
+    private static CommitService getCommitService(int choice, String accessToken) {
+        VCSIntegrationService integrationService;
+        CommitParserService parserService;
 
-        //TODO: tek satırda (inline) olarak dönülebilir.
         switch (choice) {
-            case 1:
-                return new GitHubService(accessToken);
-            case 2:
-                return new GitLabService(accessToken);
-            case 3:
-                return new AzureDevOpsService(accessToken);
-            case 4:
-                return new BitbucketService(accessToken);
+            case 1: // GitHub
+                integrationService = new GitHubIntegrationService(accessToken);
+                parserService = new GitHubCommitParser();
+                return new GitHubCommitService(integrationService, parserService);
+            case 2: // GitLab
+                integrationService = new GitLabIntegrationService(accessToken);
+                parserService = new GitLabCommitParser();
+                return new GitLabCommitService(integrationService, parserService);
+            case 3: // Azure DevOps
+                // Azure DevOps için uygun entegrasyon ve parser servislerini ekle
+                break;
+            case 4: // Bitbucket
+                integrationService = new BitbucketIntegrationService(accessToken);
+                parserService = new BitbucketCommitParser();
+                return new BitbucketCommitService(integrationService, parserService);
             default:
                 return null;
         }
+        return null;
     }
 }
