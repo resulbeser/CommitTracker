@@ -8,8 +8,6 @@ import org.apache.hc.client5.http.impl.classic.HttpClients;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 
 public class BitbucketIntegrationService implements VCSIntegrationService {
 
@@ -21,36 +19,14 @@ public class BitbucketIntegrationService implements VCSIntegrationService {
 
     @Override
     public String fetchCommits(String owner, String repo, String accessToken) {
-        try {
-            // Kullanıcı adı ve repo adını URL için uygun formata kodlayın
-            String encodedOwner = URLEncoder.encode(owner, StandardCharsets.UTF_8.toString());
-            String encodedRepo = URLEncoder.encode(repo, StandardCharsets.UTF_8.toString());
-
-            // Bitbucket API URL'sini oluştur
-            String url = String.format("https://api.bitbucket.org/2.0/repositories/%s/%s/commits", encodedOwner, encodedRepo);
-            return makeApiCall(url, this.accessToken);
-
-        } catch (Exception e) {
-            System.out.println("HATA: URL kodlaması sırasında bir sorun oluştu: " + e.getMessage());
-            return null;
-        }
+        String url = String.format("https://api.bitbucket.org/2.0/repositories/%s/%s/commits", owner, repo);
+        return makeApiCall(url, this.accessToken);
     }
 
     @Override
     public String fetchCommitDetails(String owner, String repo, String sha, String accessToken) {
-        try {
-            // Kullanıcı adı ve repo adını URL için uygun formata kodlayın
-            String encodedOwner = URLEncoder.encode(owner, StandardCharsets.UTF_8.toString());
-            String encodedRepo = URLEncoder.encode(repo, StandardCharsets.UTF_8.toString());
-
-            // Bitbucket API URL'sini oluştur
-            String url = String.format("https://api.bitbucket.org/2.0/repositories/%s/%s/commit/%s", encodedOwner, encodedRepo, sha);
-            return makeApiCall(url, this.accessToken);
-
-        } catch (Exception e) {
-            System.out.println("HATA: URL kodlaması sırasında bir sorun oluştu: " + e.getMessage());
-            return null;
-        }
+        String url = String.format("https://api.bitbucket.org/2.0/repositories/%s/%s/commit/%s", owner, repo, sha);
+        return makeApiCall(url, this.accessToken);
     }
 
     private String makeApiCall(String url, String accessToken) {

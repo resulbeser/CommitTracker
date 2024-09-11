@@ -1,27 +1,11 @@
 package io.oobeya.committracker.dto;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+
+@Data
+@AllArgsConstructor
 public class CommitsRequest {
     private String owner;
     private String repo;
-
-    public CommitsRequest(String owner, String repo) {
-        this.owner = owner;
-        this.repo = repo;
-    }
-
-    public String getOwner() {
-        return owner;
-    }
-
-    public void setOwner(String owner) {
-        this.owner = owner;
-    }
-
-    public String getRepo() {
-        return repo;
-    }
-
-    public void setRepo(String repo) {
-        this.repo = repo;
-    }
 }

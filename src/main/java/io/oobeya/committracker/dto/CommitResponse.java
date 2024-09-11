@@ -1,14 +1,15 @@
 package io.oobeya.committracker.dto;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
-@Data // Getter, Setter, toString, hashCode ve equals metodlarını otomatik olarak oluşturur
-@NoArgsConstructor // Parametresiz bir constructor oluşturur
+@Data
+@NoArgsConstructor
 public class CommitResponse {
     private String sha;
     private String message;
@@ -21,15 +22,10 @@ public class CommitResponse {
         this.message = message;
         this.author = author;
         this.date = date;
-        this.files = new ArrayList<>();
     }
 
-    public void setFiles(JsonNode fileNodes) {
-        for (JsonNode fileNode : fileNodes) {
-            String fileName = fileNode.has("filename") ? fileNode.get("filename").asText() : "Unknown file";
-            int additions = fileNode.has("additions") ? fileNode.get("additions").asInt() : 0;
-            int deletions = fileNode.has("deletions") ? fileNode.get("deletions").asInt() : 0;
-            files.add(new CommitFileResponse(fileName, additions, deletions));
-        }
+    public LocalDateTime getDateAsLocalDateTime() {
+        DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE_TIME;
+        return LocalDateTime.parse(this.date, formatter);
     }
 }

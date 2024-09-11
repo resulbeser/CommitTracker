@@ -42,7 +42,6 @@ public class BitbucketCommitService implements CommitService {
         return commitResponses;
     }
 
-    // Ek bir metod commit'leri almak için
     public List<CommitResponse> getStoredCommits() {
         return new ArrayList<>(commitStorage);
     }

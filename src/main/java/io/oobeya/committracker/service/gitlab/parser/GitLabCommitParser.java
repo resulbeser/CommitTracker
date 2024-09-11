@@ -1,5 +1,6 @@
 package io.oobeya.committracker.service.gitlab.parser;
 
+import io.oobeya.committracker.dto.CommitFileResponse;
 import io.oobeya.committracker.dto.CommitResponse;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -38,7 +39,14 @@ public class GitLabCommitParser implements CommitParserService {
 
             // Dosya değişikliklerini ekle (eğer GitLab API dosya bilgilerini sağlıyorsa)
             if (commitNode.has("files")) {
-                commitResponse.setFiles(commitNode.get("files"));
+                List<CommitFileResponse> files = new ArrayList<>();
+                for (JsonNode fileNode : commitNode.get("files")) {
+                    String fileName = fileNode.path("file_path").asText();
+                    int additions = fileNode.path("additions").asInt();
+                    int deletions = fileNode.path("deletions").asInt();
+                    files.add(new CommitFileResponse(fileName, additions, deletions));
+                }
+                commitResponse.setFiles(files);
             }
 
             return commitResponse;
