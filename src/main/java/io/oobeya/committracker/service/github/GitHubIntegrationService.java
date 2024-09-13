@@ -11,7 +11,7 @@ import java.io.InputStreamReader;
 
 public class GitHubIntegrationService implements VCSIntegrationService {
 
-    private final String accessToken;
+    public final String accessToken;
 
     public GitHubIntegrationService(String accessToken) {
         this.accessToken = accessToken;
@@ -29,7 +29,7 @@ public class GitHubIntegrationService implements VCSIntegrationService {
         return makeApiCall(url, this.accessToken);
     }
 
-    private String makeApiCall(String url, String accessToken) {
+    public String makeApiCall(String url, String accessToken) {
         StringBuilder result = new StringBuilder();
         try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
             HttpGet httpGet = new HttpGet(url);

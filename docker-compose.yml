@@ -1,4 +1,4 @@
-version: '2.29.1-desktop.1'
+version: '2.29.1'
 
 services:
   db:
@@ -23,7 +23,7 @@ services:
     networks:
       - committracker-network
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/commit_tracker_db
+      SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/commit_tracker_db
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: 730261
 

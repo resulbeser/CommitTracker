@@ -1,12 +1,31 @@
 package io.oobeya.committracker.dto;
 
-import lombok.AllArgsConstructor;
+import jakarta.persistence.*;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+
 
 @Data
-@AllArgsConstructor
+@NoArgsConstructor
+@Entity
+@Table(name = "commit_files")
 public class CommitFileResponse {
-    private String fileName;
-    private int additions;
-    private int deletions;
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    public String fileName;
+    public int additions;
+    public int deletions;
+
+    @ManyToOne
+    @JoinColumn(name = "commit_id") // foreign key kolon adı
+    public CommitResponse commit; // Commit ile ilişki
+
+    public CommitFileResponse(String fileName, int additions, int deletions) {
+        this.fileName = fileName;
+        this.additions = additions;
+        this.deletions = deletions;
+    }
 }

@@ -14,9 +14,9 @@ import java.util.List;
 @Service
 public class GitHubCommitService implements CommitService {
 
-    private final VCSIntegrationService integrationService;
-    private final CommitParserService parserService;
-    private final List<CommitResponse> commitStorage = new ArrayList<>(); // In-memory storage
+    public final VCSIntegrationService integrationService;
+    public final CommitParserService parserService;
+    public final List<CommitResponse> commitStorage = new ArrayList<>(); // In-memory storage
 
     @Autowired
     public GitHubCommitService(VCSIntegrationService integrationService, CommitParserService parserService) {

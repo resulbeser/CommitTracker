@@ -6,10 +6,18 @@ import io.oobeya.committracker.service.*;
 import io.oobeya.committracker.service.github.GitHubCommitService;
 import io.oobeya.committracker.service.github.GitHubIntegrationService;
 import io.oobeya.committracker.service.github.parser.GitHubCommitParser;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
+@SpringBootApplication
+@ComponentScan(basePackages = "io.oobeya.committracker")
+@EntityScan(basePackages = "io.oobeya.committracker.dto")
+@EnableJpaRepositories(basePackages = "io.oobeya.committracker.repository")
 public class CommitTrackerApp {
     public static void main(String[] args) {
         try (Scanner scanner = new Scanner(System.in)) {
@@ -68,7 +76,7 @@ public class CommitTrackerApp {
         }
     }
 
-    private static int getUserChoice(Scanner scanner) {
+    public static int getUserChoice(Scanner scanner) {
         int choice = -1;
         try {
             System.out.println("Veri çekmek istediğiniz platformu seçin:");
@@ -86,12 +94,12 @@ public class CommitTrackerApp {
         return choice;
     }
 
-    private static String getInput(Scanner scanner, String prompt) {
+    public static String getInput(Scanner scanner, String prompt) {
         System.out.print(prompt);
         return scanner.nextLine();
     }
 
-    private static CommitService getCommitService(int choice, String accessToken) {
+    public static CommitService getCommitService(int choice, String accessToken) {
         VCSIntegrationService integrationService;
         CommitParserService parserService;
 
