@@ -20,8 +20,8 @@ public class CommitFileResponse {
     public int deletions;
 
     @ManyToOne
-    @JoinColumn(name = "commit_id") // foreign key kolon adı
-    public CommitResponse commit; // Commit ile ilişki
+    @JoinColumn(name = "commit_id")
+    public CommitResponse commit;
 
     public CommitFileResponse(String fileName, int additions, int deletions) {
         this.fileName = fileName;

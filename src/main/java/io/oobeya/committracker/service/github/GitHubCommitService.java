@@ -41,8 +41,4 @@ public class GitHubCommitService implements CommitService {
         commitStorage.addAll(commitResponses);
         return commitResponses;
     }
-
-    public List<CommitResponse> getStoredCommits() {
-        return new ArrayList<>(commitStorage);
-    }
 }

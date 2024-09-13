@@ -9,6 +9,5 @@ public interface CommitService {
     List<CommitResponse> getCommits(CommitsRequest request);
     CommitResponse getCommitDetails(String owner, String repo, String sha);
 
-    // Yeni metod: Commit bilgilerini kaydetmek için
     List<CommitResponse> saveCommits(List<CommitResponse> commitResponses);
 }

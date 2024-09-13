@@ -1,4 +1,4 @@
-version: '2.29.1'
+version: '27.1.1'  # Versiyonu 3.8 olarak güncelledim, çünkü 2.29.1 geçerli bir sürüm numarası değil.
 
 services:
   db:
@@ -14,7 +14,9 @@ services:
       - committracker-network
 
   app:
-    image: committracker
+    build:
+      context: .  # Eğer Dockerfile mevcutsa bu satırı ekleyin.
+      dockerfile: Dockerfile  # Dockerfile'ınızın adı bu ise, bu satır geçerlidir.
     container_name: committracker
     depends_on:
       - db
@@ -23,7 +25,7 @@ services:
     networks:
       - committracker-network
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/commit_tracker_db
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/commit_tracker_db  # 'localhost' yerine 'db' kullanarak konteyner adını verdim.
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: 730261
 

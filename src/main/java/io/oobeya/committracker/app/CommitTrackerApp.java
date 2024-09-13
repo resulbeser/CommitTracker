@@ -32,7 +32,6 @@ public class CommitTrackerApp {
             String repo = getInput(scanner, "Repo Adı Giriniz: ");
             String accessToken = getInput(scanner, "Access Token Giriniz (Opsiyonel): ");
 
-            // Doğru CommitService nesnesi oluşturma
             CommitService commitService = getCommitService(choice, accessToken);
             if (commitService == null) {
                 System.out.println("Geçersiz seçim!");
@@ -41,7 +40,6 @@ public class CommitTrackerApp {
 
             CommitController commitController = new CommitController((CommitService) commitService);
 
-            // Tüm commitleri al ve her bir commit için detayları göster
             commitController.getCommits(owner, repo).forEach(commitResponse -> {
                 System.out.println("========================================");
                 System.out.println("Commit SHA: " + commitResponse.getSha());
@@ -49,7 +47,6 @@ public class CommitTrackerApp {
                 System.out.println("Date: " + commitResponse.getDate());
                 System.out.println("Message: " + commitResponse.getMessage());
 
-                // Commit detaylarını al
                 CommitResponse commitDetails = ((CommitService) commitService).getCommitDetails(owner, repo, commitResponse.getSha());
 
                 if (commitDetails != null) {
@@ -104,7 +101,7 @@ public class CommitTrackerApp {
         CommitParserService parserService;
 
         switch (choice) {
-            case 1: // GitHub
+            case 1:
                 integrationService = new GitHubIntegrationService(accessToken);
                 parserService = new GitHubCommitParser();
                 return new GitHubCommitService(integrationService, parserService);
