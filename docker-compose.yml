@@ -1,0 +1,32 @@
+version: '2.29.1-desktop.1'
+
+services:
+  db:
+    image: postgres:16
+    container_name: committracker-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 730261
+      POSTGRES_DB: commit_tracker_db
+    ports:
+      - "5432:5432"
+    networks:
+      - committracker-network
+
+  app:
+    image: committracker
+    container_name: committracker
+    depends_on:
+      - db
+    ports:
+      - "8081:8080"
+    networks:
+      - committracker-network
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/commit_tracker_db
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: 730261
+
+networks:
+  committracker-network:
+    driver: bridge

@@ -3,15 +3,9 @@ package io.oobeya.committracker.app;
 import io.oobeya.committracker.controller.CommitController;
 import io.oobeya.committracker.dto.CommitResponse;
 import io.oobeya.committracker.service.*;
-import io.oobeya.committracker.service.bitbucket.BitbucketCommitService;
-import io.oobeya.committracker.service.bitbucket.BitbucketIntegrationService;
-import io.oobeya.committracker.service.bitbucket.parser.BitbucketCommitParser;
 import io.oobeya.committracker.service.github.GitHubCommitService;
 import io.oobeya.committracker.service.github.GitHubIntegrationService;
 import io.oobeya.committracker.service.github.parser.GitHubCommitParser;
-import io.oobeya.committracker.service.gitlab.GitLabCommitService;
-import io.oobeya.committracker.service.gitlab.GitLabIntegrationService;
-import io.oobeya.committracker.service.gitlab.parser.GitLabCommitParser;
 
 import java.util.InputMismatchException;
 import java.util.Scanner;
@@ -37,7 +31,7 @@ public class CommitTrackerApp {
                 return;
             }
 
-            CommitController commitController = new CommitController(commitService);
+            CommitController commitController = new CommitController((CommitService) commitService);
 
             // Tüm commitleri al ve her bir commit için detayları göster
             commitController.getCommits(owner, repo).forEach(commitResponse -> {
@@ -48,7 +42,7 @@ public class CommitTrackerApp {
                 System.out.println("Message: " + commitResponse.getMessage());
 
                 // Commit detaylarını al
-                CommitResponse commitDetails = commitService.getCommitDetails(owner, repo, commitResponse.getSha());
+                CommitResponse commitDetails = ((CommitService) commitService).getCommitDetails(owner, repo, commitResponse.getSha());
 
                 if (commitDetails != null) {
                     if (!commitDetails.getFiles().isEmpty()) {
@@ -106,20 +100,8 @@ public class CommitTrackerApp {
                 integrationService = new GitHubIntegrationService(accessToken);
                 parserService = new GitHubCommitParser();
                 return new GitHubCommitService(integrationService, parserService);
-            case 2: // GitLab
-                integrationService = new GitLabIntegrationService(accessToken);
-                parserService = new GitLabCommitParser();
-                return new GitLabCommitService(integrationService, parserService);
-            case 3: // Azure DevOps
-                // Azure DevOps için uygun entegrasyon ve parser servislerini ekle
-                break;
-            case 4: // Bitbucket
-                integrationService = new BitbucketIntegrationService(accessToken);
-                parserService = new BitbucketCommitParser();
-                return new BitbucketCommitService(integrationService, parserService);
             default:
                 return null;
         }
-        return null;
     }
 }

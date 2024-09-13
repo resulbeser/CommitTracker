@@ -1,3 +1,4 @@
+
 package io.oobeya.committracker.repository;
 
 import io.oobeya.committracker.entity.Commit;
