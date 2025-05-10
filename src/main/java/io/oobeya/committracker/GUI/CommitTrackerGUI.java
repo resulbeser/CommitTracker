@@ -33,19 +33,73 @@ public class CommitTrackerGUI extends Application {
 
         // Tablo oluştur
         tableView = new TableView<>();
+        tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 
+// SHA sütunu
         TableColumn<CommitResponse, String> shaCol = new TableColumn<>("SHA");
         shaCol.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(data.getValue().getSha()));
+        shaCol.setMinWidth(100);
+        shaCol.setCellFactory(tc -> {
+            TableCell<CommitResponse, String> cell = new TableCell<>() {
+                @Override
+                protected void updateItem(String item, boolean empty) {
+                    super.updateItem(item, empty);
+                    setText(empty ? null : item);
+                    setAlignment(Pos.CENTER_LEFT);
+                }
+            };
+            return cell;
+        });
 
+// Author sütunu
         TableColumn<CommitResponse, String> authorCol = new TableColumn<>("Author");
         authorCol.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(data.getValue().getAuthor()));
+        authorCol.setMinWidth(120);
+        authorCol.setCellFactory(tc -> {
+            TableCell<CommitResponse, String> cell = new TableCell<>() {
+                @Override
+                protected void updateItem(String item, boolean empty) {
+                    super.updateItem(item, empty);
+                    setText(empty ? null : item);
+                    setAlignment(Pos.CENTER_LEFT);
+                }
+            };
+            return cell;
+        });
 
+// Date sütunu
         TableColumn<CommitResponse, String> dateCol = new TableColumn<>("Date");
         dateCol.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(data.getValue().getDate()));
+        dateCol.setMinWidth(130);
+        dateCol.setCellFactory(tc -> {
+            TableCell<CommitResponse, String> cell = new TableCell<>() {
+                @Override
+                protected void updateItem(String item, boolean empty) {
+                    super.updateItem(item, empty);
+                    setText(empty ? null : item);
+                    setAlignment(Pos.CENTER_LEFT);
+                }
+            };
+            return cell;
+        });
 
+// Message sütunu
         TableColumn<CommitResponse, String> messageCol = new TableColumn<>("Message");
         messageCol.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(data.getValue().getMessage()));
+        messageCol.setMinWidth(250);
+        messageCol.setCellFactory(tc -> {
+            TableCell<CommitResponse, String> cell = new TableCell<>() {
+                @Override
+                protected void updateItem(String item, boolean empty) {
+                    super.updateItem(item, empty);
+                    setText(empty ? null : item);
+                    setAlignment(Pos.CENTER_LEFT);
+                }
+            };
+            return cell;
+        });
 
+// Sütunları tabloya ekle
         tableView.getColumns().addAll(shaCol, authorCol, dateCol, messageCol);
         tableView.setPrefHeight(250);
 
