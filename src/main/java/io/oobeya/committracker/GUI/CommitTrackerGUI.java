@@ -1,5 +1,6 @@
 package io.oobeya.committracker.GUI;
 
+import io.oobeya.committracker.dto.CommitResponse;
 import javafx.application.Application;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -18,41 +19,52 @@ import java.io.IOException;
 
 public class CommitTrackerGUI extends Application {
 
+    private TableView<CommitResponse> tableView;
+    private TextField userTextField;
+    private TextField repoTextField;
+    private TextField tokenTextField;
+
     @Override
     public void start(Stage primaryStage) {
         // Logo yükle
         ImageView logoView = new ImageView(new Image(getClass().getResourceAsStream("/CommitTrackerLogo.png")));
-        logoView.setFitWidth(150);  // Logo büyüklüğü
+        logoView.setFitWidth(150);
         logoView.setPreserveRatio(true);
 
-        // Platform Seçimi
+        // Tablo oluştur
+        tableView = new TableView<>();
+
+        TableColumn<CommitResponse, String> shaCol = new TableColumn<>("SHA");
+        shaCol.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(data.getValue().getSha()));
+
+        TableColumn<CommitResponse, String> authorCol = new TableColumn<>("Author");
+        authorCol.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(data.getValue().getAuthor()));
+
+        TableColumn<CommitResponse, String> dateCol = new TableColumn<>("Date");
+        dateCol.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(data.getValue().getDate()));
+
+        TableColumn<CommitResponse, String> messageCol = new TableColumn<>("Message");
+        messageCol.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(data.getValue().getMessage()));
+
+        tableView.getColumns().addAll(shaCol, authorCol, dateCol, messageCol);
+        tableView.setPrefHeight(250);
+
+        // Platform seçimi
         Label platformLabel = new Label("Veri çekmek istediğiniz platformu seçin:");
         ComboBox<String> platformComboBox = new ComboBox<>();
         platformComboBox.getItems().addAll("GitHub", "GitLab", "Azure DevOps", "Bitbucket");
 
-        // Kullanıcı Adı Girişi
+        // Giriş alanları
         Label userLabel = new Label("Kullanıcı Adı (Owner) Giriniz:");
-        TextField userTextField = new TextField();
+        userTextField = new TextField();
 
-        // Repo Adı Girişi
         Label repoLabel = new Label("Repo Adı Giriniz:");
-        TextField repoTextField = new TextField();
+        repoTextField = new TextField();
 
-        // Access Token Girişi
         Label tokenLabel = new Label("Access Token Giriniz (Opsiyonel):");
-        TextField tokenTextField = new TextField();
+        tokenTextField = new TextField();
 
-        // TextArea
-        TextArea outputArea = new TextArea();
-        outputArea.setEditable(false);
-        outputArea.setStyle("-fx-background-radius: 5px; -fx-border-radius: 5px;");
-
-        // Kaydet Butonu
-        Button saveButton = new Button("Verileri Kaydet");
-        saveButton.setStyle("-fx-background-color: white; -fx-text-fill: #008080; -fx-font-weight: bold; -fx-border-radius: 5px; -fx-background-radius: 5px;");
-        saveButton.setOnAction(e -> saveToFile(outputArea.getText()));
-
-        // Çek Butonu
+        // Verileri Çek butonu
         Button fetchCommitsButton = new Button("Verileri Çek");
         fetchCommitsButton.setStyle("-fx-background-color: white; -fx-text-fill: #008080; -fx-font-weight: bold; -fx-border-radius: 5px; -fx-background-radius: 5px;");
         fetchCommitsButton.setOnAction(e -> {
@@ -61,46 +73,41 @@ public class CommitTrackerGUI extends Application {
             String accessToken = tokenTextField.getText();
             int choice = platformComboBox.getSelectionModel().getSelectedIndex() + 1;
 
-            if (repo.equals("private") && accessToken.isEmpty()) {
-                showAlert("Hata", "Access Token Girmelisiniz", "Private repo için access token girmeniz gerekmektedir.");
+            if (owner.isEmpty() || repo.isEmpty()) {
+                showAlert("Hata", "Eksik Bilgi", "Kullanıcı adı ve repo adı boş bırakılamaz.");
                 return;
             }
 
             if (choice < 1 || choice > 4) {
-                outputArea.setText("Geçersiz seçim!");
+                showAlert("Hata", "Geçersiz Seçim", "Lütfen geçerli bir platform seçin.");
                 return;
             }
 
             VCSService vcsService = getVCSService(choice, accessToken);
             if (vcsService == null) {
-                outputArea.setText("Geçersiz seçim!");
+                showAlert("Hata", "Geçersiz Seçim", "Desteklenmeyen platform.");
                 return;
             }
 
             CommitController commitController = new CommitController(vcsService);
-            StringBuilder output = new StringBuilder();
+            var commits = commitController.getCommits(owner, repo);
 
-            commitController.getCommits(owner, repo).forEach(commitResponse -> {
-                output.append("========================================\n");
-                output.append("Commit SHA: ").append(commitResponse.getSha()).append("\n");
-                output.append("Author: ").append(commitResponse.getAuthor()).append("\n");
-                output.append("Date: ").append(commitResponse.getDate()).append("\n");
-                output.append("Message: ").append(commitResponse.getMessage()).append("\n");
+            if (commits == null || commits.isEmpty()) {
+                tokenTextField.clear();
+                tokenTextField.setPromptText("⚠ Access Token gerekli olabilir");
+                tokenTextField.setStyle("-fx-border-color: red; -fx-border-width: 2px; -fx-prompt-text-fill: red;");
+                return;
+            }
 
-                if (!commitResponse.getFiles().isEmpty()) {
-                    output.append("\nChanged Files:\n");
-                    int fileIndex = 1;
-                    for (var file : commitResponse.getFiles()) {
-                        output.append(fileIndex++).append(". File: ").append(file.getFileName()).append("\n");
-                        output.append("   - Added Lines: ").append(file.getAdditions()).append("\n");
-                        output.append("   - Deleted Lines: ").append(file.getDeletions()).append("\n");
-                    }
-                }
-                output.append("----------------------------------------\n");
-            });
-
-            outputArea.setText(output.toString());
+            tokenTextField.setStyle("");
+            tokenTextField.setPromptText("Access Token Giriniz (Opsiyonel):");
+            tableView.getItems().setAll(commits);
         });
+
+        // Kaydet Butonu
+        Button saveButton = new Button("Verileri Kaydet");
+        saveButton.setStyle("-fx-background-color: white; -fx-text-fill: #008080; -fx-font-weight: bold; -fx-border-radius: 5px; -fx-background-radius: 5px;");
+        saveButton.setOnAction(e -> saveToFile());
 
         // Arayüz düzeni
         VBox layout = new VBox(10);
@@ -114,13 +121,56 @@ public class CommitTrackerGUI extends Application {
                 repoLabel, repoTextField,
                 tokenLabel, tokenTextField,
                 fetchCommitsButton, saveButton,
-                outputArea
+                tableView
         );
 
-        Scene scene = new Scene(layout, 550, 600);
+        Scene scene = new Scene(layout, 600, 650);
         primaryStage.setTitle("Git Repo Uygulaması");
         primaryStage.setScene(scene);
         primaryStage.show();
+    }
+
+    private void saveToFile() {
+        try {
+            String username = userTextField.getText().trim();
+            String repoName = repoTextField.getText().trim();
+            if (username.isEmpty() || repoName.isEmpty()) {
+                showAlert("Hata", "Eksik Bilgi", "Kullanıcı adı veya repo adı boş olamaz.");
+                return;
+            }
+
+            String fileName = username + repoName + ".txt";
+            String userDesktop = System.getProperty("user.home") + "\\Desktop\\" + fileName;
+
+            File file = new File(userDesktop);
+            if (!file.exists()) file.createNewFile();
+
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
+                for (CommitResponse commit : tableView.getItems()) {
+                    writer.write("========================================\n");
+                    writer.write("Commit SHA: " + commit.getSha() + "\n");
+                    writer.write("Author: " + commit.getAuthor() + "\n");
+                    writer.write("Date: " + commit.getDate() + "\n");
+                    writer.write("Message: " + commit.getMessage() + "\n");
+
+                    if (!commit.getFiles().isEmpty()) {
+                        writer.write("\nChanged Files:\n");
+                        int i = 1;
+                        for (var fileChange : commit.getFiles()) {
+                            writer.write(i++ + ". File: " + fileChange.getFileName() + "\n");
+                            writer.write("   - Added Lines: " + fileChange.getAdditions() + "\n");
+                            writer.write("   - Deleted Lines: " + fileChange.getDeletions() + "\n");
+                        }
+                    }
+                    writer.write("----------------------------------------\n");
+                }
+            }
+
+            System.out.println("Veri başarıyla kaydedildi: " + userDesktop);
+        } catch (IOException ex) {
+            ex.printStackTrace();
+            System.out.println("Dosya kaydedilirken bir hata oluştu.");
+        }
     }
 
     private void showAlert(String title, String header, String message) {
@@ -139,21 +189,6 @@ public class CommitTrackerGUI extends Application {
             case 4 -> new BitbucketService(accessToken);
             default -> null;
         };
-    }
-
-    private void saveToFile(String content) {
-        try {
-            String userDesktop = System.getProperty("user.home") + "\\Desktop\\commit_data.txt";
-            File file = new File(userDesktop);
-            if (!file.exists()) file.createNewFile();
-            try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
-                writer.write(content);
-            }
-            System.out.println("Veri başarıyla kaydedildi: " + userDesktop);
-        } catch (IOException ex) {
-            ex.printStackTrace();
-            System.out.println("Dosya kaydedilirken bir hata oluştu.");
-        }
     }
 
     public static void main(String[] args) {
