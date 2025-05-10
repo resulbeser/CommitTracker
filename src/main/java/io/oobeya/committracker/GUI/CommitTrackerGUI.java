@@ -4,6 +4,8 @@ import javafx.application.Application;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import io.oobeya.committracker.controller.CommitController;
@@ -18,11 +20,10 @@ public class CommitTrackerGUI extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-        // Başlık
-        Label titleLabel = new Label("CommitTracker");
-        titleLabel.setStyle("-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: white;");
-        titleLabel.setAlignment(Pos.CENTER);
-        titleLabel.setMaxWidth(Double.MAX_VALUE);
+        // Logo yükle
+        ImageView logoView = new ImageView(new Image(getClass().getResourceAsStream("/CommitTrackerLogo.png")));
+        logoView.setFitWidth(150);  // Logo büyüklüğü
+        logoView.setPreserveRatio(true);
 
         // Platform Seçimi
         Label platformLabel = new Label("Veri çekmek istediğiniz platformu seçin:");
@@ -37,21 +38,21 @@ public class CommitTrackerGUI extends Application {
         Label repoLabel = new Label("Repo Adı Giriniz:");
         TextField repoTextField = new TextField();
 
-        // Access Token Girişi (opsiyonel)
+        // Access Token Girişi
         Label tokenLabel = new Label("Access Token Giriniz (Opsiyonel):");
         TextField tokenTextField = new TextField();
 
-        // Çıktıyı Görüntülemek İçin TextArea
+        // TextArea
         TextArea outputArea = new TextArea();
         outputArea.setEditable(false);
         outputArea.setStyle("-fx-background-radius: 5px; -fx-border-radius: 5px;");
 
-        // Kaydetme Butonu
+        // Kaydet Butonu
         Button saveButton = new Button("Verileri Kaydet");
         saveButton.setStyle("-fx-background-color: white; -fx-text-fill: #008080; -fx-font-weight: bold; -fx-border-radius: 5px; -fx-background-radius: 5px;");
         saveButton.setOnAction(e -> saveToFile(outputArea.getText()));
 
-        // Çalıştırma Butonu
+        // Çek Butonu
         Button fetchCommitsButton = new Button("Verileri Çek");
         fetchCommitsButton.setStyle("-fx-background-color: white; -fx-text-fill: #008080; -fx-font-weight: bold; -fx-border-radius: 5px; -fx-background-radius: 5px;");
         fetchCommitsButton.setOnAction(e -> {
@@ -101,13 +102,13 @@ public class CommitTrackerGUI extends Application {
             outputArea.setText(output.toString());
         });
 
-        // Görsel düzenlemeler
+        // Arayüz düzeni
         VBox layout = new VBox(10);
         layout.setStyle("-fx-background-color: #71d9bb; -fx-padding: 20px;");
         layout.setAlignment(Pos.TOP_CENTER);
 
         layout.getChildren().addAll(
-                titleLabel,
+                logoView,
                 platformLabel, platformComboBox,
                 userLabel, userTextField,
                 repoLabel, repoTextField,
