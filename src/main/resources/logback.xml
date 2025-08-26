@@ -5,6 +5,13 @@
         <encoder>
             <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
         </encoder>
+        <filter class="ch.qos.logback.core.filter.EvaluatorFilter">
+            <evaluator class="ch.qos.logback.classic.boolex.OnMarkerEvaluator">
+                <marker>JAVAFX_CSS_WARNING</marker>
+            </evaluator>
+            <onMismatch>NEUTRAL</onMismatch>
+            <onMatch>DENY</onMatch>
+        </filter>
     </appender>
 
     <!-- File appender for application logs -->
@@ -15,19 +22,24 @@
         </encoder>
     </appender>
 
-    <!-- Suppress JavaFX CSS warnings -->
-    <logger name="javafx.scene.CssStyleHelper" level="ERROR"/>
-    <logger name="com.sun.javafx" level="WARN"/>
+    <!-- Completely suppress JavaFX CSS warnings -->
+    <logger name="javafx.scene.CssStyleHelper" level="OFF"/>
+    <logger name="com.sun.javafx.scene.CssStyleHelper" level="OFF"/>
+    <logger name="com.sun.javafx" level="ERROR"/>
+    <logger name="javafx" level="ERROR"/>
 
     <!-- Suppress Apache HttpClient debug logs -->
     <logger name="org.apache.hc" level="WARN"/>
     <logger name="org.apache.http" level="WARN"/>
 
+    <!-- Suppress Spring Boot logs -->
+    <logger name="org.springframework" level="WARN"/>
+
     <!-- Application loggers -->
     <logger name="committracker" level="INFO"/>
 
     <!-- Root logger -->
-    <root level="INFO">
+    <root level="WARN">
         <appender-ref ref="CONSOLE"/>
     </root>
 </configuration>

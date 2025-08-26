@@ -1,0 +1,12 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="CommitTrackerGUI - Clean" type="Application" factoryName="Application">
+    <option name="MAIN_CLASS_NAME" value="committracker.GUI.CommitTrackerGUI" />
+    <module name="CommitTracker" />
+    <option name="VM_PARAMETERS" value="--module-path &quot;C:\JavaFX\javafx-sdk-24.0.1\lib&quot; --add-modules javafx.controls,javafx.fxml -Djavafx.logging.level=OFF -Dprism.lcdtext=false -Djava.util.logging.config.file=src/main/resources/logging.properties -Djava.util.logging.ConsoleHandler.level=WARNING" />
+    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>
+

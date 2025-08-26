@@ -493,6 +493,18 @@ public class CommitTrackerGUI extends Application {
     }
 
     public static void main(String[] args) {
+        // Suppress JavaFX CSS warnings completely
+        System.setProperty("javafx.logging.level", "OFF");
+        System.setProperty("prism.lcdtext", "false");
+
+        // Configure Java logging to suppress CSS warnings
+        java.util.logging.Logger.getLogger("javafx.scene.CssStyleHelper").setLevel(java.util.logging.Level.OFF);
+        java.util.logging.Logger.getLogger("com.sun.javafx").setLevel(java.util.logging.Level.OFF);
+        java.util.logging.Logger.getLogger("javafx").setLevel(java.util.logging.Level.OFF);
+
+        // Suppress all CSS console warnings
+        java.util.logging.Logger.getGlobal().setLevel(java.util.logging.Level.WARNING);
+
         launch(args);
     }
 }
