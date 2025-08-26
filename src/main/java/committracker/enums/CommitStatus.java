@@ -1,4 +1,4 @@
-package io.oobeya.committracker.enums;
+package committracker.enums;
 
 public enum CommitStatus {
     UNKNOWN("Unknown"),
@@ -7,8 +7,6 @@ public enum CommitStatus {
     UNKNOWN_DATE("Unknown date");
 
     private final String message;
-
-    //TODO javada hata messajlar nasıl hndle edilir, nasıl tanımlanır, enum ile record arasındaki farka bakabilirsin
 
     CommitStatus(String message) {
         this.message = message;

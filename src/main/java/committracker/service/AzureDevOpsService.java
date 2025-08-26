@@ -1,9 +1,10 @@
-package io.oobeya.committracker.service;
+package committracker.service;
 
-import io.oobeya.committracker.dto.CommitResponse;
-import io.oobeya.committracker.dto.CommitsRequest;
+import committracker.dto.CommitResponse;
+import committracker.dto.CommitsRequest;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.springframework.stereotype.Service;
+
 import java.util.List;
 
 @Service

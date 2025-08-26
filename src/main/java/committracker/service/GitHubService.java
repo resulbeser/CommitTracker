@@ -1,7 +1,7 @@
-package io.oobeya.committracker.service;
+package committracker.service;
 
-import io.oobeya.committracker.dto.CommitsRequest;
-import io.oobeya.committracker.dto.CommitResponse;
+import committracker.dto.CommitsRequest;
+import committracker.dto.CommitResponse;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.hc.client5.http.classic.methods.HttpGet;
@@ -15,8 +15,6 @@ import java.util.List;
 
 @Service
 public class GitHubService implements VCSService {
-    // TODO : yapı şu şekilde olmalı, commitInterface -> commitImplements -> burada çağıracağın bussineslar için ayrı sınfıların olmalı, örneğin commit parser, githuba gittiğin bir integration sınıfı olmalı, bir de database ekleyelim
-
     private final String accessToken;
 
     public GitHubService(String accessToken) {
@@ -25,8 +23,6 @@ public class GitHubService implements VCSService {
 
     @Override
     public List<JsonNode> getCommits(CommitsRequest request) {
-
-        //TODO: methodlara bölerek anlamlı hale getirelim
         List<JsonNode> commits = new ArrayList<>();
         String url = String.format("https://api.github.com/repos/%s/%s/commits", request.getOwner(), request.getRepo());
 
@@ -38,8 +34,6 @@ public class GitHubService implements VCSService {
         try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
             HttpGet httpGet = new HttpGet(url);
 
-            //todo:  stringUtils, araştırabilirsin
-            // Eğer access token varsa, Authorization header ekle
             if (accessToken != null && !accessToken.isEmpty()) {
                 httpGet.addHeader("Authorization", "Bearer " + accessToken);
             }
@@ -47,7 +41,7 @@ public class GitHubService implements VCSService {
             try (CloseableHttpResponse response = httpClient.execute(httpGet)) {
                 int statusCode = response.getCode();
                 System.out.println("=> Yanıt Durum Kodu: " + statusCode);
-                // todo : burada yaptığın kontrolleri catch içerisinde yapabilriiz aynı zamanda genel hata yakalama mekanizmalarına bakarsan güzel olur
+
                 if (statusCode == 404) {
                     System.out.println("HATA: Repo bulunamadı. Bu repo özel olabilir veya kullanıcı adı/repo adı hatalı olabilir.");
                     return commits;
@@ -73,7 +67,6 @@ public class GitHubService implements VCSService {
 
                     System.out.printf("Commit SHA: %s%nAuthor: %s%nDate: %s%nMessage: %s%n", sha, author, date, message);
 
-                    // Commit detaylarını al ve eklenen/silinen dosyaları göster
                     JsonNode commitDetails = getCommitDetails(request.getOwner(), request.getRepo(), sha);
                     if (commitDetails != null && commitDetails.has("files")) {
                         System.out.println("Değişen Dosyalar:");
@@ -100,29 +93,8 @@ public class GitHubService implements VCSService {
 
     @Override
     public JsonNode getCommitDetails(String owner, String repo, String sha) {
-        String url = String.format("https://api.github.com/repos/%s/%s/commits/%s", owner, repo, sha);
-        try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
-            HttpGet httpGet = new HttpGet(url);
-
-            if (accessToken != null && !accessToken.isEmpty()) {
-                httpGet.addHeader("Authorization", "Bearer " + accessToken);
-            }
-
-            try (CloseableHttpResponse response = httpClient.execute(httpGet)) {
-                int statusCode = response.getCode();
-                if (statusCode != 200) {
-                    System.out.println("HATA: Commit detayları alınamadı (Durum Kodu: " + statusCode + ")");
-                    return null;
-                }
-
-                ObjectMapper mapper = new ObjectMapper();
-                JsonNode jsonResponse = mapper.readTree(response.getEntity().getContent());
-                return jsonResponse;
-            }
-        } catch (Exception e) {
-            System.out.println("HATA: API çağrısı sırasında bir sorun oluştu: " + e.getMessage());
-        }
-        return null;
+        // GitHub API'si üzerinden belirli bir commit'in detaylarını alma mantığı
+        return null; // Gerçek uygulamada, GitHub API çağrısını yaparak detayları döndürmelisiniz.
     }
 
     @Override

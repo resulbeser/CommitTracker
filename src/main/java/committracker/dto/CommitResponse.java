@@ -1,4 +1,4 @@
-package io.oobeya.committracker.dto;
+package committracker.dto;
 
 import com.fasterxml.jackson.databind.JsonNode;
 

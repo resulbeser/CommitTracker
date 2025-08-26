@@ -1,0 +1,14 @@
+&lt;component name="ProjectRunConfigurationManager"&gt;
+  &lt;configuration default="false" name="Run CommitTracker GUI" type="Application" factoryName="Application"&gt;
+    &lt;option name="ALTERNATIVE_JRE_PATH" value="22" /&gt;
+    &lt;option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" /&gt;
+    &lt;option name="MAIN_CLASS_NAME" value="committracker.GUI.CommitTrackerGUI" /&gt;
+    &lt;module name="CommitTracker" /&gt;
+    &lt;option name="VM_PARAMETERS" value="--module-path &amp;quot;C:\JavaFX\javafx-sdk-24.0.1\lib&amp;quot; --add-modules javafx.controls,javafx.fxml" /&gt;
+    &lt;option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" /&gt;
+    &lt;method v="2"&gt;
+      &lt;option name="Make" enabled="true" /&gt;
+    &lt;/method&gt;
+  &lt;/configuration&gt;
+&lt;/component&gt;
+

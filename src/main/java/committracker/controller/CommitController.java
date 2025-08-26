@@ -1,9 +1,9 @@
-package io.oobeya.committracker.controller;
+package committracker.controller;
 
-import io.oobeya.committracker.dto.CommitsRequest;
-import io.oobeya.committracker.dto.CommitResponse;
-import io.oobeya.committracker.enums.CommitStatus;
-import io.oobeya.committracker.service.VCSService;
+import committracker.dto.CommitsRequest;
+import committracker.dto.CommitResponse;
+import committracker.enums.CommitStatus;
+import committracker.service.VCSService;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,7 +29,7 @@ public class CommitController {
         CommitsRequest request = new CommitsRequest(owner, repo);
         List<JsonNode> commits = vcsService.getCommits(request);
 
-        return Optional.ofNullable(vcsService.getCommits(request))
+        return Optional.ofNullable(commits)
                 .map(commitList -> formatCommits(commitList, owner, repo))
                 .orElseGet(() -> {
                     System.out.println("Hata: Commit listesi alınamadı, lütfen API çağrınızı kontrol edin.");
