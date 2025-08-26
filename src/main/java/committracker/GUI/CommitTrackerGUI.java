@@ -16,7 +16,11 @@ import javafx.concurrent.Task;
 import javafx.application.Platform;
 
 import java.util.List;
+import java.util.regex.Pattern;
 
+/**
+ * CommitTracker GUI Application - Modern JavaFX interface for Git platform commit tracking
+ */
 public class CommitTrackerGUI extends Application {
 
     private ComboBox<String> platformComboBox;
@@ -31,27 +35,24 @@ public class CommitTrackerGUI extends Application {
     public void start(Stage primaryStage) {
         primaryStage.setTitle("Commit Tracker - Git Platform Manager");
 
-        // Pencere ikonu ayarla (varsa)
+        // Set window icon if available
         try {
             Image icon = new Image(getClass().getResourceAsStream("/CommitTrackerLogo.png"));
             primaryStage.getIcons().add(icon);
         } catch (Exception e) {
-            System.out.println("Pencere ikonu yüklenemedi");
+            System.out.println("Window icon could not be loaded");
         }
 
-        // Ana layout
         BorderPane root = new BorderPane();
         root.getStyleClass().add("root");
 
-        // Üst kısım - Şeffaf logo ve başlık
         VBox headerSection = createHeaderSection();
         root.setTop(headerSection);
 
-        // Orta kısım - İki sütunlu SplitPane
         SplitPane mainContent = createMainContent();
         root.setCenter(mainContent);
 
-        // Scene oluştur ve CSS yükle
+        // Create scene and load CSS
         Scene scene = new Scene(root, 1200, 800);
         scene.getStylesheets().add(getClass().getResource("/styles.css").toExternalForm());
 
@@ -65,7 +66,7 @@ public class CommitTrackerGUI extends Application {
         VBox headerBox = new VBox();
         headerBox.getStyleClass().add("header-section");
 
-        // Logo - şeffaf arkaplan
+        // Transparent logo with smooth scaling
         try {
             ImageView logoView = new ImageView(new Image(getClass().getResourceAsStream("/CommitTrackerLogo.png")));
             logoView.setFitHeight(100);
@@ -73,7 +74,7 @@ public class CommitTrackerGUI extends Application {
             logoView.setSmooth(true);
             logoView.getStyleClass().add("logo");
 
-            // Logo hover efekti
+            // Logo hover effect
             logoView.setOnMouseEntered(e -> {
                 logoView.setScaleX(1.1);
                 logoView.setScaleY(1.1);
@@ -85,7 +86,7 @@ public class CommitTrackerGUI extends Application {
 
             headerBox.getChildren().add(logoView);
         } catch (Exception e) {
-            // Logo yoksa text başlık
+            // Fallback text title if logo not found
             Label titleLabel = new Label("🚀 COMMIT TRACKER");
             titleLabel.getStyleClass().add("app-title");
             headerBox.getChildren().add(titleLabel);
@@ -105,15 +106,12 @@ public class CommitTrackerGUI extends Application {
         SplitPane splitPane = new SplitPane();
         splitPane.getStyleClass().add("split-pane");
 
-        // Sol panel - Form alanı
         VBox leftPanel = createLeftPanel();
-
-        // Sağ panel - Sonuçlar alanı
         VBox rightPanel = createRightPanel();
 
         splitPane.getItems().addAll(leftPanel, rightPanel);
 
-        // Sol panelin sabit genişliği
+        // Fixed width for left panel, flexible right panel
         splitPane.setDividerPositions(0.35);
         SplitPane.setResizableWithParent(leftPanel, false);
 
@@ -124,7 +122,7 @@ public class CommitTrackerGUI extends Application {
         VBox leftPanel = new VBox();
         leftPanel.getStyleClass().add("left-panel");
 
-        // Platform seçimi
+        // Platform selection
         VBox platformSection = createFormSection("🌐 Platform Seçin:");
         platformComboBox = new ComboBox<>();
         platformComboBox.getStyleClass().add("modern-combo-box");
@@ -132,28 +130,28 @@ public class CommitTrackerGUI extends Application {
         platformComboBox.setValue("GitHub");
         platformSection.getChildren().add(platformComboBox);
 
-        // Owner field
+        // Repository owner field
         VBox ownerSection = createFormSection("👤 Kullanıcı Adı (Owner):");
         ownerField = new TextField();
         ownerField.getStyleClass().add("modern-text-field");
         ownerField.setPromptText("Örn: microsoft");
         ownerSection.getChildren().add(ownerField);
 
-        // Repo field
+        // Repository name field
         VBox repoSection = createFormSection("📁 Repository Adı:");
         repoField = new TextField();
         repoField.getStyleClass().add("modern-text-field");
         repoField.setPromptText("Örn: vscode");
         repoSection.getChildren().add(repoField);
 
-        // Token field
+        // Access token field
         VBox tokenSection = createFormSection("🔑 Access Token (Opsiyonel):");
         tokenField = new TextField();
         tokenField.getStyleClass().add("modern-text-field");
         tokenField.setPromptText("Private repository erişimi için token");
         tokenSection.getChildren().add(tokenField);
 
-        // Fetch button
+        // Fetch commits button
         fetchButton = new Button("🚀 Commit'leri Getir");
         fetchButton.getStyleClass().add("primary-button");
         fetchButton.setOnAction(e -> fetchCommits());
@@ -176,11 +174,10 @@ public class CommitTrackerGUI extends Application {
         VBox rightPanel = new VBox(15);
         rightPanel.getStyleClass().add("right-panel");
 
-        // Başlık
         Label resultLabel = new Label("📊 Commit Sonuçları");
         resultLabel.getStyleClass().add("results-title");
 
-        // Sonuç alanı - ScrollPane içinde
+        // Results area with scrolling capability
         resultArea = new TextArea();
         resultArea.getStyleClass().add("results-text-area");
         resultArea.setEditable(false);
@@ -200,7 +197,7 @@ public class CommitTrackerGUI extends Application {
         scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
         scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
 
-        // VBox constraints - sağ panel expand olsun
+        // Allow right panel to expand
         VBox.setVgrow(scrollPane, Priority.ALWAYS);
 
         rightPanel.getChildren().addAll(resultLabel, scrollPane);
@@ -218,41 +215,67 @@ public class CommitTrackerGUI extends Application {
         return section;
     }
 
+    /**
+     * Fetches commits from the selected platform in a background thread
+     */
     private void fetchCommits() {
         String owner = ownerField.getText().trim();
         String repo = repoField.getText().trim();
         String token = tokenField.getText().trim();
         String platform = platformComboBox.getValue();
 
+        // Security: Input validation at GUI level
+        if (!isValidInput(owner, repo)) {
+            showAlert("Güvenlik Hatası", "Geçersiz karakter kullanımı tespit edildi!\n\n" +
+                     "• Sadece harf, rakam, nokta, tire ve alt çizgi kullanın\n" +
+                     "• Özel karakterler (.., /, \\) kullanmayın\n" +
+                     "• Maksimum uzunluk: Owner 39, Repo 100 karakter");
+            return;
+        }
+
         if (owner.isEmpty() || repo.isEmpty()) {
             showAlert("Hata", "Lütfen kullanıcı adı ve repository adını girin!");
             return;
         }
 
-        // UI'yi disable et
+        // Security: Validate token format if provided
+        if (!token.isEmpty() && !isValidToken(token)) {
+            showAlert("Güvenlik Hatası", "Access token formatı geçersiz!\n\n" +
+                     "Token sadece güvenli karakterler içermelidir.");
+            return;
+        }
+
+        // Disable UI during fetch operation
         fetchButton.setDisable(true);
         progressIndicator.setVisible(true);
         resultArea.setText("🔄 Commit bilgileri yükleniyor...\n\nLütfen bekleyin...");
 
-        // Background task oluştur
+        // Background task to avoid blocking UI
         Task<List<CommitResponse>> task = new Task<List<CommitResponse>>() {
             @Override
             protected List<CommitResponse> call() throws Exception {
+                System.out.println("DEBUG: Starting commit fetch for " + owner + "/" + repo + " on " + platform);
+
                 VCSService vcsService = getVCSService(platform, token);
                 if (vcsService == null) {
-                    throw new Exception("Geçersiz platform seçimi!");
+                    throw new Exception("Invalid platform selection: " + platform);
                 }
 
-                // CommitController kullanarak doğru dönüşümü yap
+                System.out.println("DEBUG: VCS Service created successfully");
                 CommitController controller = new CommitController(vcsService);
-                return controller.getCommits(owner, repo);
+
+                System.out.println("DEBUG: Calling controller.getCommits()");
+                List<CommitResponse> result = controller.getCommits(owner, repo);
+
+                System.out.println("DEBUG: Received " + (result != null ? result.size() : 0) + " commits");
+                return result;
             }
         };
 
         task.setOnSucceeded(e -> {
             List<CommitResponse> commits = task.getValue();
             if (commits.isEmpty()) {
-                // Private repository kontrolü - token yoksa ve commits boşsa
+                // Handle private repository detection
                 if (token.isEmpty()) {
                     showPrivateRepoAlert("Bu repository private olabilir ve Access Token gerektirebilir.\n\n" +
                         "Lütfen geçerli bir Access Token girin veya repository'nin public olduğundan emin olun.");
@@ -280,9 +303,8 @@ public class CommitTrackerGUI extends Application {
         task.setOnFailed(e -> {
             Throwable exception = task.getException();
             System.err.println("Error fetching commits: " + exception.getMessage());
-            exception.printStackTrace();
 
-            // Hata mesajına göre private repository tespiti
+            // Security: Don't expose detailed error information to user
             String errorMessage = exception.getMessage().toLowerCase();
             if (errorMessage.contains("401") || errorMessage.contains("unauthorized") ||
                 errorMessage.contains("403") || errorMessage.contains("forbidden") ||
@@ -295,8 +317,9 @@ public class CommitTrackerGUI extends Application {
                     "💡 Access Token nasıl alınır:\n" +
                     getTokenInstructions(platform));
             } else {
-                showAlert("Hata", "Commit bilgileri alınırken hata oluştu: " + exception.getMessage());
-                resultArea.setText("❌ Hata oluştu: " + exception.getMessage());
+                // Security: Show generic error message, log details separately
+                showAlert("Hata", "Commit bilgileri alınırken bir hata oluştu.\n\nLütfen girdiğiniz bilgileri kontrol edin.");
+                resultArea.setText("❌ İşlem başarısız oldu. Lütfen tekrar deneyin.");
             }
             fetchButton.setDisable(false);
             progressIndicator.setVisible(false);
@@ -307,6 +330,51 @@ public class CommitTrackerGUI extends Application {
         thread.start();
     }
 
+    /**
+     * Security: Input validation for GUI fields
+     */
+    private boolean isValidInput(String owner, String repo) {
+        if (owner == null || repo == null) {
+            return false;
+        }
+
+        // Check length limits
+        if (owner.length() > 39 || repo.length() > 100) {
+            return false;
+        }
+
+        // Check for valid characters only (alphanumeric, dots, hyphens, underscores)
+        Pattern validPattern = Pattern.compile("^[a-zA-Z0-9._-]+$");
+        if (!validPattern.matcher(owner).matches() || !validPattern.matcher(repo).matches()) {
+            return false;
+        }
+
+        // Check for path traversal attempts
+        if (owner.contains("..") || repo.contains("..") ||
+            owner.contains("/") || repo.contains("/") ||
+            owner.contains("\\") || repo.contains("\\")) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Security: Validate access token format
+     */
+    private boolean isValidToken(String token) {
+        if (token == null || token.length() < 10 || token.length() > 100) {
+            return false;
+        }
+
+        // Basic token format validation (alphanumeric and safe special chars)
+        Pattern tokenPattern = Pattern.compile("^[a-zA-Z0-9._-]+$");
+        return tokenPattern.matcher(token).matches();
+    }
+
+    /**
+     * Displays the fetched commits in a formatted way
+     */
     private void displayCommits(List<CommitResponse> commits) {
         StringBuilder result = new StringBuilder();
 
@@ -321,7 +389,8 @@ public class CommitTrackerGUI extends Application {
             result.append("📅 Date: ").append(commit.getDate()).append("\n");
             result.append("💬 Message: ").append(commit.getMessage()).append("\n");
 
-            if (!commit.getFiles().isEmpty()) {
+            // Null check for files list
+            if (commit.getFiles() != null && !commit.getFiles().isEmpty()) {
                 result.append("📁 Changed Files (").append(commit.getFiles().size()).append("):\n");
                 int fileIndex = 1;
                 for (var file : commit.getFiles()) {
@@ -329,6 +398,8 @@ public class CommitTrackerGUI extends Application {
                     result.append("      ➕ Added: ").append(file.getAdditions()).append(" lines\n");
                     result.append("      ➖ Deleted: ").append(file.getDeletions()).append(" lines\n");
                 }
+            } else {
+                result.append("📁 Changed Files: Information not available\n");
             }
             result.append("-".repeat(80)).append("\n\n");
         }
@@ -336,6 +407,9 @@ public class CommitTrackerGUI extends Application {
         Platform.runLater(() -> resultArea.setText(result.toString()));
     }
 
+    /**
+     * Returns the appropriate VCS service based on platform and token
+     */
     private VCSService getVCSService(String platform, String accessToken) {
         switch (platform) {
             case "GitHub":
@@ -368,7 +442,6 @@ public class CommitTrackerGUI extends Application {
             alert.setHeaderText("Access Token Gerekli");
             alert.setContentText(message);
 
-            // Alert'i genişlet
             alert.getDialogPane().setPrefWidth(500);
             alert.getDialogPane().setPrefHeight(300);
 
@@ -376,6 +449,9 @@ public class CommitTrackerGUI extends Application {
         });
     }
 
+    /**
+     * Returns platform-specific instructions for obtaining access tokens
+     */
     private String getTokenInstructions(String platform) {
         switch (platform) {
             case "GitHub":
@@ -407,7 +483,9 @@ public class CommitTrackerGUI extends Application {
         }
     }
 
-    // Custom exception class for private repository detection
+    /**
+     * Custom exception for private repository detection
+     */
     private static class PrivateRepositoryException extends Exception {
         public PrivateRepositoryException(String message) {
             super(message);

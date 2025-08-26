@@ -1,17 +1,17 @@
-/* CommitTracker Modern CSS Styles */
+/* CommitTracker Modern CSS Styles - Clean and Professional */
 
-/* Ana arkaplan - yeşil gradient */
+/* Root background - green gradient */
 .root {
     -fx-background: linear-gradient(to bottom, #2ecc71, #27ae60);
 }
 
-/* Logo stilleri */
+/* Logo styles */
 .logo {
     -fx-background-color: transparent;
     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 8, 0, 2, 2);
 }
 
-/* Sol panel - form alanı */
+/* Left panel - form area */
 .left-panel {
     -fx-background-color: rgba(255, 255, 255, 0.95);
     -fx-background-radius: 20;
@@ -23,7 +23,7 @@
     -fx-pref-width: 360;
 }
 
-/* Form section stilleri */
+/* Form section styles */
 .form-section {
     -fx-spacing: 8;
 }
@@ -34,7 +34,7 @@
     -fx-text-fill: #2c3e50;
 }
 
-/* Input alanları */
+/* Input fields */
 .modern-text-field {
     -fx-background-radius: 10;
     -fx-border-radius: 10;
@@ -52,7 +52,7 @@
     -fx-effect: dropshadow(gaussian, rgba(52,152,219,0.3), 5, 0, 0, 0);
 }
 
-/* ComboBox stilleri */
+/* ComboBox styles */
 .modern-combo-box {
     -fx-background-radius: 10;
     -fx-border-radius: 10;
@@ -65,7 +65,7 @@
     -fx-padding: 8;
 }
 
-/* Modern buton */
+/* Primary button */
 .primary-button {
     -fx-background-color: linear-gradient(to right, #3498db, #2980b9);
     -fx-text-fill: white;
@@ -100,7 +100,7 @@
     -fx-progress-color: #3498db;
 }
 
-/* Sağ panel - sonuçlar alanı */
+/* Right panel - results area */
 .right-panel {
     -fx-background-color: rgba(255, 255, 255, 0.95);
     -fx-background-radius: 20;
@@ -115,7 +115,7 @@
     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 2, 0, 1, 1);
 }
 
-/* TextArea - sonuç alanı */
+/* TextArea - result area */
 .results-text-area {
     -fx-background-color: rgba(248, 249, 250, 0.98);
     -fx-background-radius: 15;
@@ -134,7 +134,7 @@
     -fx-border-width: 2;
 }
 
-/* ScrollPane için stil */
+/* ScrollPane styles */
 .results-scroll-pane {
     -fx-background-color: transparent;
     -fx-background-radius: 15;
@@ -159,7 +159,7 @@
     -fx-background-color: rgba(52,152,219, 0.7);
 }
 
-/* SplitPane ayarları */
+/* SplitPane configuration */
 .split-pane {
     -fx-background-color: transparent;
 }
@@ -170,7 +170,7 @@
     -fx-padding: 0 2 0 2;
 }
 
-/* Başlık alanı */
+/* Header section */
 .header-section {
     -fx-alignment: center;
     -fx-padding: 20;
@@ -195,14 +195,4 @@
     -fx-font-size: 11px;
     -fx-text-fill: rgba(255, 255, 255, 0.7);
     -fx-font-style: italic;
-}
-
-/* Animasyonlar */
-@keyframes fadeIn {
-    from { -fx-opacity: 0; }
-    to { -fx-opacity: 1; }
-}
-
-.fade-in {
-    -fx-animation: fadeIn 0.5s ease-in;
 }

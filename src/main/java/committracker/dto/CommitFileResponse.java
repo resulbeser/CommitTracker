@@ -1,37 +1,22 @@
 package committracker.dto;
-
+import lombok.Data;
+/**
+ * Data Transfer Object for commit file changes
+ */
+@Data
 public class CommitFileResponse {
-    private String fileName;
+    private String filename;
+    private String status;
     private int additions;
     private int deletions;
-
-    public CommitFileResponse(String fileName, int additions, int deletions) {
-        this.fileName = fileName;
-        this.additions = additions;
-        this.deletions = deletions;
-    }
-
+    private int changes;
+    private String patch;
+    private String blobUrl;
+    private String rawUrl;
+    
+    // Helper method for backward compatibility
     public String getFileName() {
-        return fileName;
-    }
-
-    public void setFileName(String fileName) {
-        this.fileName = fileName;
-    }
-
-    public int getAdditions() {
-        return additions;
-    }
-
-    public void setAdditions(int additions) {
-        this.additions = additions;
-    }
-
-    public int getDeletions() {
-        return deletions;
-    }
-
-    public void setDeletions(int deletions) {
-        this.deletions = deletions;
+        return filename;
     }
 }
+
