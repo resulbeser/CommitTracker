@@ -10,7 +10,6 @@ import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
 import org.apache.hc.client5.http.impl.classic.HttpClients;
 import org.apache.hc.client5.http.ssl.SSLConnectionSocketFactory;
 import org.apache.hc.core5.ssl.SSLContexts;
-import org.springframework.stereotype.Service;
 
 import javax.net.ssl.SSLContext;
 import java.net.URLEncoder;
@@ -23,9 +22,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Pattern;
 
 /**
- * Secure Bitbucket API service implementation for fetching commit data
+ * Bitbucket API service implementation for fetching commit data
  */
-@Service
 public class BitbucketService implements VCSService {
     private final String accessToken;
 

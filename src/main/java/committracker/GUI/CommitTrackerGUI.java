@@ -1,8 +1,9 @@
 package committracker.GUI;
 
 import committracker.dto.CommitResponse;
-import committracker.controller.CommitController;
+import committracker.dto.CommitsRequest;
 import committracker.service.*;
+import com.fasterxml.jackson.databind.JsonNode;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -251,9 +252,9 @@ public class CommitTrackerGUI extends Application {
         resultArea.setText("🔄 Commit bilgileri yükleniyor...\n\nLütfen bekleyin...");
 
         // Background task to avoid blocking UI
-        Task<List<CommitResponse>> task = new Task<List<CommitResponse>>() {
+        Task<List<JsonNode>> task = new Task<List<JsonNode>>() {
             @Override
-            protected List<CommitResponse> call() throws Exception {
+            protected List<JsonNode> call() throws Exception {
                 System.out.println("DEBUG: Starting commit fetch for " + owner + "/" + repo + " on " + platform);
 
                 VCSService vcsService = getVCSService(platform, token);
@@ -262,10 +263,13 @@ public class CommitTrackerGUI extends Application {
                 }
 
                 System.out.println("DEBUG: VCS Service created successfully");
-                CommitController controller = new CommitController(vcsService);
+                CommitsRequest request = new CommitsRequest(owner, repo);
+                if (!token.isEmpty()) {
+                    request.setAccessToken(token);
+                }
 
-                System.out.println("DEBUG: Calling controller.getCommits()");
-                List<CommitResponse> result = controller.getCommits(owner, repo);
+                System.out.println("DEBUG: Calling vcsService.getCommits()");
+                List<JsonNode> result = vcsService.getCommits(request);
 
                 System.out.println("DEBUG: Received " + (result != null ? result.size() : 0) + " commits");
                 return result;
@@ -273,7 +277,7 @@ public class CommitTrackerGUI extends Application {
         };
 
         task.setOnSucceeded(e -> {
-            List<CommitResponse> commits = task.getValue();
+            List<JsonNode> commits = task.getValue();
             if (commits.isEmpty()) {
                 // Handle private repository detection
                 if (token.isEmpty()) {
@@ -294,7 +298,7 @@ public class CommitTrackerGUI extends Application {
                         "🔑 Access Token'ın repo erişim yetkisi olduğundan emin olun.");
                 }
             } else {
-                displayCommits(commits);
+                displayCommitsFromJson(commits);
             }
             fetchButton.setDisable(false);
             progressIndicator.setVisible(false);
@@ -401,6 +405,66 @@ public class CommitTrackerGUI extends Application {
             } else {
                 result.append("📁 Changed Files: Information not available\n");
             }
+            result.append("-".repeat(80)).append("\n\n");
+        }
+
+        Platform.runLater(() -> resultArea.setText(result.toString()));
+    }
+
+    /**
+     * Displays the fetched commits from JsonNode list in a formatted way
+     */
+    private void displayCommitsFromJson(List<JsonNode> commits) {
+        StringBuilder result = new StringBuilder();
+
+        result.append("🎉 Toplam ").append(commits.size()).append(" commit bulundu!\n");
+        result.append("=".repeat(80)).append("\n\n");
+
+        for (int i = 0; i < commits.size(); i++) {
+            JsonNode commit = commits.get(i);
+            result.append("📝 Commit #").append(i + 1).append("\n");
+
+            // GitHub format
+            if (commit.has("sha")) {
+                result.append("🔑 SHA: ").append(commit.get("sha").asText().substring(0, 7)).append("\n");
+                JsonNode commitData = commit.get("commit");
+                if (commitData != null) {
+                    JsonNode author = commitData.get("author");
+                    if (author != null) {
+                        result.append("👤 Author: ").append(author.get("name").asText()).append("\n");
+                        result.append("📅 Date: ").append(author.get("date").asText()).append("\n");
+                    }
+                    result.append("💬 Message: ").append(commitData.get("message").asText()).append("\n");
+                }
+            }
+            // GitLab format
+            else if (commit.has("id")) {
+                result.append("🔑 ID: ").append(commit.get("id").asText().substring(0, 7)).append("\n");
+                result.append("👤 Author: ").append(commit.get("author_name").asText()).append("\n");
+                result.append("📅 Date: ").append(commit.get("created_at").asText()).append("\n");
+                result.append("💬 Message: ").append(commit.get("message").asText()).append("\n");
+            }
+            // Bitbucket format
+            else if (commit.has("hash")) {
+                result.append("🔑 Hash: ").append(commit.get("hash").asText().substring(0, 7)).append("\n");
+                JsonNode author = commit.get("author");
+                if (author != null) {
+                    result.append("👤 Author: ").append(author.get("display_name").asText()).append("\n");
+                }
+                result.append("📅 Date: ").append(commit.get("date").asText()).append("\n");
+                result.append("💬 Message: ").append(commit.get("message").asText()).append("\n");
+            }
+            // Azure DevOps format
+            else if (commit.has("commitId")) {
+                result.append("🔑 Commit ID: ").append(commit.get("commitId").asText().substring(0, 7)).append("\n");
+                JsonNode author = commit.get("author");
+                if (author != null) {
+                    result.append("👤 Author: ").append(author.get("name").asText()).append("\n");
+                    result.append("📅 Date: ").append(author.get("date").asText()).append("\n");
+                }
+                result.append("💬 Message: ").append(commit.get("comment").asText()).append("\n");
+            }
+
             result.append("-".repeat(80)).append("\n\n");
         }
 
